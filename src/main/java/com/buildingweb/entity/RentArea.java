@@ -9,7 +9,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+
 @Entity
+@Getter
 @Table(name = "rent_area")
 public class RentArea {
     @Id
@@ -23,6 +26,11 @@ public class RentArea {
     private Integer area;
 
     @ManyToOne
-    @JoinColumn(name = "building_id")
+    @JoinColumn(name = "buildingId")
     private Building building;
+
+    @Override
+    public String toString() {
+        return this.getArea().toString();
+    }
 }

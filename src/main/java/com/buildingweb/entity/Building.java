@@ -15,13 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
 @Table(name = "building")
 public class Building {
     @Id
@@ -31,7 +27,7 @@ public class Building {
     @Column(name = "name")
     private String name;
 
-    @JoinColumn(name = "district_id")
+    @JoinColumn(name = "districtId")
     @ManyToOne
     private District district;
 
@@ -44,10 +40,10 @@ public class Building {
     @Column(name = "structure")
     private String structure;
 
-    @Column(name = "number_of_basement")
+    @Column(name = "numberOfBasement")
     private Integer numberOfBasement;
 
-    @Column(name = "floor_area")
+    @Column(name = "floorArea")
     private Integer floorArea;
 
     @Column(name = "direction")
@@ -56,19 +52,19 @@ public class Building {
     @Column(name = "level")
     private String level;
 
-    @Column(name = "rent_price")
+    @Column(name = "rentPrice")
     private Integer rentPrice;
 
-    @Column(name = "rent_price_description")
+    @Column(name = "rentPriceDescription")
     private String renPriceDescription;
 
-    @Column(name = "service_fee")
+    @Column(name = "serviceFee")
     private Integer serviceFee;
 
-    @Column(name = "car_fee")
+    @Column(name = "carFee")
     private Integer carFee;
 
-    @Column(name = "overtime_fee")
+    @Column(name = "overtimeFee")
     private Integer overtimeFee;
 
     @Column(name = "electricity")
@@ -80,22 +76,22 @@ public class Building {
     @Column(name = "payment")
     private Integer payment;
 
-    @Column(name = "rent_time")
+    @Column(name = "rentTime")
     private Integer rentTime;
 
-    @Column(name = "descoration_time")
+    @Column(name = "descorationTime")
     private Integer descorationTime;
 
-    @Column(name = "managerment_name")
-    private String managermentName;
+    @Column(name = "managermentName")
+    private String managerName;
 
-    @Column(name = "brokerage_fee")
+    @Column(name = "brokerageFee")
     private Integer brokerageFee;
 
     @Column(name = "note")
     private String note;
 
-    @Column(name = "manager_phonenumber")
+    @Column(name = "managerPhonenumber")
     private String managerPhonenumber;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "building")
@@ -103,9 +99,9 @@ public class Building {
 
     @ManyToMany
     @JoinTable(
-        name = "assignment_building",
-        joinColumns = @JoinColumn(name = "building_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
+        name = "assignmentBuilding",
+        joinColumns = @JoinColumn(name = "buildingId"),
+        inverseJoinColumns = @JoinColumn(name = "userId")
     )
     private List<User> users;
 

@@ -11,7 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import lombok.Getter;
+
 @Entity
+@Getter
 @Table(name = "user")
 public class User {
     @Id
@@ -24,7 +27,7 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "phone_number")
+    @Column(name = "phoneNumber")
     private String phoneNumber;
 
     @Column(name = "fullname")

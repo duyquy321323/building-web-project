@@ -12,7 +12,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import lombok.Getter;
+
 @Entity
+@Getter
 @Table(name = "rent_type")
 public class RentType {
     @Id
@@ -28,8 +31,8 @@ public class RentType {
     @ManyToMany
     @JoinTable(
         name = "buildingrenttype",
-        joinColumns = @JoinColumn(name = "rent_type_id"),
-        inverseJoinColumns = @JoinColumn(name = "building_id")
+        joinColumns = @JoinColumn(name = "rentTypeId"),
+        inverseJoinColumns = @JoinColumn(name = "buildingId")
     )
     private List<Building> buildings;
 }
