@@ -20,6 +20,7 @@ import com.buildingweb.entity.User;
 import com.buildingweb.model.RentTypeDTO;
 import com.buildingweb.repository.BuildingRepository;
 import com.buildingweb.request.BuildingRequest;
+import com.buildingweb.utils.UtilFunction;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,54 +35,54 @@ public class BuildingRepositoryImpl implements BuildingRepository {
         CriteriaQuery<Building> query = criteriaBuilder.createQuery(Building.class); // khai báo kiểu dữ liệu mà bạn muốn truy vấn
         Root<Building> root = query.from(Building.class); // chỉ định đối tượng cơ sở truy vấn
         List<Predicate> predicates = new ArrayList<>(); // danh sách các truy vấn 
-        if(buildingRequest.getName() != null){
+        if(UtilFunction.checkString(buildingRequest.getName())){
             predicates.add(criteriaBuilder.like(root.get("name"),"%" + buildingRequest.getName() + "%"));
         }
-        if(buildingRequest.getFloorArea() != null){
+        if(UtilFunction.checkInteger(buildingRequest.getFloorArea())){
             predicates.add(criteriaBuilder.equal(root.get("floorArea"), buildingRequest.getFloorArea()));
         }
-        if(buildingRequest.getDistrict() != null && buildingRequest.getDistrict().getId() != null){
+        if(buildingRequest.getDistrict() != null && UtilFunction.checkInteger(buildingRequest.getDistrict().getId())){
             predicates.add(criteriaBuilder.equal(root.get("district").get("id"), buildingRequest.getDistrict().getId()));
         }
-        if(buildingRequest.getWard() != null){
+        if(UtilFunction.checkString(buildingRequest.getWard())){
             predicates.add(criteriaBuilder.like(root.get("ward"), "%" + buildingRequest.getWard() + "%"));
         }
-        if(buildingRequest.getStreet() != null){
+        if(UtilFunction.checkString(buildingRequest.getStreet())){
             predicates.add(criteriaBuilder.like(root.get("street"), "%" + buildingRequest.getStreet() + "%"));
         }
-        if(buildingRequest.getNumberOfBasement() != null){
+        if(UtilFunction.checkInteger(buildingRequest.getNumberOfBasement())){
             predicates.add(criteriaBuilder.equal(root.get("numberOfBasement"), buildingRequest.getNumberOfBasement()));
         }
-        if(buildingRequest.getDirection() != null){
+        if(UtilFunction.checkString(buildingRequest.getDirection())){
             predicates.add(criteriaBuilder.like(root.get("direction"), "%" + buildingRequest + "%"));
         }
-        if(buildingRequest.getLevel() != null){
+        if(UtilFunction.checkString(buildingRequest.getLevel())){
             predicates.add(criteriaBuilder.like(root.get("level"), buildingRequest.getLevel()));
         }
 
         // join diện tích thuê và building
         Join<Building,RentArea> joinBuildRentArea = root.join("rentAreas", JoinType.LEFT);
-        if(buildingRequest.getAreaFrom() != null){
+        if(UtilFunction.checkInteger(buildingRequest.getAreaFrom())){
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(joinBuildRentArea.get("area"), buildingRequest.getAreaFrom()));
         }
-        if(buildingRequest.getAreaTo() != null){
+        if(UtilFunction.checkInteger(buildingRequest.getAreaTo())){
             predicates.add(criteriaBuilder.lessThanOrEqualTo(joinBuildRentArea.get("area"), buildingRequest.getAreaTo()));
         }
-        if(buildingRequest.getRentPriceFrom() != null){
+        if(UtilFunction.checkInteger(buildingRequest.getRentPriceFrom())){
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("rentPrice"), buildingRequest.getRentPriceFrom()));
         }
-        if(buildingRequest.getRentPriceTo() != null){
+        if(UtilFunction.checkInteger(buildingRequest.getRentPriceTo())){
             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("rentPrice"), buildingRequest.getRentPriceTo()));
         }
-        if(buildingRequest.getManagerName() != null){
+        if(UtilFunction.checkString(buildingRequest.getManagerName())){
             predicates.add(criteriaBuilder.like(root.get("managerName"), "%" + buildingRequest.getManagerName() + "%"));
         }
-        if(buildingRequest.getManagerPhonenumber() != null){
+        if(UtilFunction.checkString(buildingRequest.getManagerPhonenumber())){
             predicates.add(criteriaBuilder.equal(root.get("managerPhonenumber"), buildingRequest.getManagerPhonenumber()));
         }
 
         Join<Building,User> userJoin = root.join("users", JoinType.LEFT); // lấy tất cả các bản ghi root kể cả không có bản ghi tương ứng là joinUser 
-        if(buildingRequest.getUser() != null){
+        if(buildingRequest.getUser() != null && UtilFunction.checkInteger(buildingRequest.getUser().getId())){
             predicates.add(criteriaBuilder.equal(userJoin.get("id"), buildingRequest.getUser().getId()));
         }
 

@@ -1,8 +1,7 @@
 package com.buildingweb.response;
 
 import com.buildingweb.entity.Building;
-import com.buildingweb.entity.RentArea;
-import com.buildingweb.ultil.UltilFunction;
+import com.buildingweb.utils.UtilFunction;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +26,6 @@ public class BuildingResponse {
     private Integer brokerageFee;
 
     public static BuildingResponse fromDomain(Building building){
-        UltilFunction<RentArea> rentAreaFunc = new UltilFunction<>();
-        return BuildingResponse.builder().name(building.getName()).address(building.getStreet() + "," + building.getWard()+ "," + building.getDistrict().getName()).numberOfBasement(building.getNumberOfBasement()).managerName(building.getManagerName()).managerPhonenumber(building.getManagerPhonenumber()).floorArea(building.getFloorArea()).emptySpace(null).leasedArea(rentAreaFunc.arrayToString(building.getRentAreas())).rentPrice(building.getRentPrice()).serviceFee(building.getServiceFee()).brokerageFee(building.getBrokerageFee()).build();
+        return BuildingResponse.builder().name(building.getName()).address(building.getStreet() + "," + building.getWard()+ "," + building.getDistrict().getName()).numberOfBasement(building.getNumberOfBasement()).managerName(building.getManagerName()).managerPhonenumber(building.getManagerPhonenumber()).floorArea(building.getFloorArea()).emptySpace(null).leasedArea(UtilFunction.arrayToString(building.getRentAreas())).rentPrice(building.getRentPrice()).serviceFee(building.getServiceFee()).brokerageFee(building.getBrokerageFee()).build();
     }
 }
