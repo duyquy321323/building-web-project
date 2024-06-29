@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -22,12 +23,10 @@ import com.buildingweb.repository.BuildingRepository;
 import com.buildingweb.request.BuildingRequest;
 import com.buildingweb.utils.UtilFunction;
 
-import lombok.RequiredArgsConstructor;
-
 @Repository
-@RequiredArgsConstructor
 public class BuildingRepositoryImpl implements BuildingRepository {
-    private final EntityManager entityManager;
+    @PersistenceContext // inject đối tượng EntityManager vào do spring boot quản lý vòng đời của nó
+    private EntityManager entityManager;
 
     @Override
     public List<Building> findBuildingByBuildingRequest(BuildingRequest buildingRequest) {
