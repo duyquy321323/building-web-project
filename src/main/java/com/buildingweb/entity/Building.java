@@ -4,6 +4,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -94,7 +95,7 @@ public class Building {
     @Column(name = "managerPhonenumber")
     private String managerPhonenumber;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "building")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "building", fetch = FetchType.LAZY)
     private List<RentArea> rentAreas;
 
     @ManyToMany
