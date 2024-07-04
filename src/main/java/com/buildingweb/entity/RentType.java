@@ -1,9 +1,11 @@
 package com.buildingweb.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,11 +30,11 @@ public class RentType {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "buildingrenttype",
         joinColumns = @JoinColumn(name = "rentTypeId"),
         inverseJoinColumns = @JoinColumn(name = "buildingId")
     )
-    private List<Building> buildings;
+    private List<Building> buildings = new ArrayList<>();
 }

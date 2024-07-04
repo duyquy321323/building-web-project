@@ -15,4 +15,8 @@ public class DistrictConverter {
     public DistrictDTO toDistrictDTO(District district){
         return modelMapper.map(district, DistrictDTO.class);
     }
+
+    public District districtDTOToDistrict(DistrictDTO districtDTO){
+        return modelMapper.map(districtDTO, District.class);
+    }
 }

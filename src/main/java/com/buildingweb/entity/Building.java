@@ -1,4 +1,5 @@
 package com.buildingweb.entity;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,10 +16,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import lombok.Getter;
+import lombok.Data;
 
 @Entity
-@Getter
+@Data
 @Table(name = "building")
 public class Building {
     @Id
@@ -28,7 +29,7 @@ public class Building {
     @Column(name = "name")
     private String name;
 
-    @JoinColumn(name = "districtId")
+    @JoinColumn(name = "districtId", nullable = false)
     @ManyToOne
     private District district;
 
@@ -57,7 +58,7 @@ public class Building {
     private Integer rentPrice;
 
     @Column(name = "rentPriceDescription")
-    private String renPriceDescription;
+    private String rentPriceDescription;
 
     @Column(name = "serviceFee")
     private Integer serviceFee;
@@ -96,16 +97,16 @@ public class Building {
     private String managerPhonenumber;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "building", fetch = FetchType.LAZY)
-    private List<RentArea> rentAreas;
+    private List<RentArea> rentAreas = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "assignmentBuilding",
         joinColumns = @JoinColumn(name = "buildingId"),
         inverseJoinColumns = @JoinColumn(name = "userId")
     )
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "buildings")
-    private List<RentType> rentTypes;
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "buildings", fetch = FetchType.LAZY)
+    private List<RentType> rentTypes = new ArrayList<>();
 }

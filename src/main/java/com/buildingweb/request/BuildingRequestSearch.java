@@ -9,7 +9,7 @@ import com.buildingweb.model.UserDTO;
 import lombok.Getter;
 
 @Getter
-public class BuildingRequest {
+public class BuildingRequestSearch {
     private String name;
     private Integer floorArea;
     private DistrictDTO district;

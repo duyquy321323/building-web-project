@@ -1,10 +1,9 @@
 package com.buildingweb.repository;
 
-import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.buildingweb.entity.Building;
-import com.buildingweb.request.BuildingRequest;
 
-public interface BuildingRepository{
-    public List<Building> findBuildingByBuildingRequest(BuildingRequest buildingRequest);
+public interface BuildingRepository extends JpaRepository<Building, Integer>{
 }

@@ -25,7 +25,7 @@ public class RentArea {
     @Column(name = "area")
     private Integer area;
 
-    @ManyToOne
+    @ManyToOne // EAGER
     @JoinColumn(name = "buildingId")
     private Building building;
 

@@ -1,4 +1,5 @@
 package com.buildingweb.entity;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,10 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import lombok.Getter;
-
+import lombok.Data;
 @Entity
-@Getter
+@Data
 @Table(name = "district")
 public class District {
     @Id
@@ -28,5 +28,5 @@ public class District {
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "district", fetch = FetchType.LAZY)
-    private List<Building> buildings;
+    private List<Building> buildings = new ArrayList<>();
 }
