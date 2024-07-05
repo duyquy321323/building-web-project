@@ -33,6 +33,11 @@ public class BuildingController {
         return ResponseEntity.status(HttpStatus.OK).body(buildingService.searchBuildingByBuildingRequest(buildingRequest));
     }
 
+    @GetMapping("/api/building/{name}")
+    public ResponseEntity<?> getBuildingByNameContaining(@PathVariable("name") String name){
+        return ResponseEntity.status(HttpStatus.OK).body(buildingService.findByNameContaining(name));
+    }
+
     @PostMapping("/api/building")
     public ResponseEntity<?> addBuilding(@RequestBody BuildingRequestAdd buildingRequest){
         buildingService.addNewBuilding(buildingRequest);
@@ -45,9 +50,15 @@ public class BuildingController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("/api/building/{id}")
-    public ResponseEntity<?> deleteBuilding(@PathVariable("id") Integer id){
-        buildingService.deleteBuilding(id);
+    // @DeleteMapping("/api/building/{id}")
+    // public ResponseEntity<?> deleteBuilding(@PathVariable("id") Integer id){
+    //     buildingService.deleteBuilding(id);
+    //     return ResponseEntity.status(HttpStatus.OK).build();
+    // }
+
+    @DeleteMapping("/api/building/{ids}")
+    public ResponseEntity<?> deleteMultiBuilding(@PathVariable("ids") Integer[] ids){
+        buildingService.deleteByListId(ids);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
