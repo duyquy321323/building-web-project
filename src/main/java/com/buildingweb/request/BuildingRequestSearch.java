@@ -11,17 +11,17 @@ import lombok.Getter;
 @Getter
 public class BuildingRequestSearch {
     private String name;
-    private Integer floorArea;
+    private Long floorArea;
     private DistrictDTO district;
     private String ward;
     private String street;
-    private Integer numberOfBasement;
+    private Long numberOfBasement;
     private String direction;
     private String level;
-    private Integer areaFrom;
-    private Integer areaTo;
-    private Integer rentPriceFrom;
-    private Integer rentPriceTo;
+    private Long areaFrom;
+    private Long areaTo;
+    private Long rentPriceFrom;
+    private Long rentPriceTo;
     private String managerName;
     private String managerPhonenumber;
     private UserDTO user;

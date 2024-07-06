@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 public class BuildingResponse {
     private String name;
     private String address;
-    private Integer numberOfBasement;
+    private Long numberOfBasement;
     private String managerName;
     private String managerPhonenumber;
-    private Integer floorArea;
-    private Integer emptySpace;
+    private Long floorArea;
+    private Long emptySpace;
     private String leasedArea;
-    private Integer rentPrice;
-    private Integer serviceFee;
-    private Integer brokerageFee;
+    private Long rentPrice;
+    private Long serviceFee;
+    private Long brokerageFee;
 }

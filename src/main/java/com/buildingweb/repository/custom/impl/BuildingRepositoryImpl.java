@@ -35,10 +35,10 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom{
         if(UtilFunction.checkString(buildingRequest.getName())){
             predicates.add(criteriaBuilder.like(root.get("name"),"%" + buildingRequest.getName() + "%"));
         }
-        if(UtilFunction.checkInteger(buildingRequest.getFloorArea())){
+        if(UtilFunction.checkLong(buildingRequest.getFloorArea())){
             predicates.add(criteriaBuilder.equal(root.get("floorArea"), buildingRequest.getFloorArea()));
         }
-        if(buildingRequest.getDistrict() != null && UtilFunction.checkInteger(buildingRequest.getDistrict().getId())){
+        if(buildingRequest.getDistrict() != null && UtilFunction.checkLong(buildingRequest.getDistrict().getId())){
             predicates.add(criteriaBuilder.equal(root.get("district").get("id"), buildingRequest.getDistrict().getId()));
         }
         if(UtilFunction.checkString(buildingRequest.getWard())){
@@ -47,7 +47,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom{
         if(UtilFunction.checkString(buildingRequest.getStreet())){
             predicates.add(criteriaBuilder.like(root.get("street"), "%" + buildingRequest.getStreet() + "%"));
         }
-        if(UtilFunction.checkInteger(buildingRequest.getNumberOfBasement())){
+        if(UtilFunction.checkLong(buildingRequest.getNumberOfBasement())){
             predicates.add(criteriaBuilder.equal(root.get("numberOfBasement"), buildingRequest.getNumberOfBasement()));
         }
         if(UtilFunction.checkString(buildingRequest.getDirection())){
@@ -59,16 +59,16 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom{
 
         // join diện tích thuê và building
         Join<Building,RentArea> joinBuildRentArea = root.join("rentAreas", JoinType.LEFT);
-        if(UtilFunction.checkInteger(buildingRequest.getAreaFrom())){
+        if(UtilFunction.checkLong(buildingRequest.getAreaFrom())){
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(joinBuildRentArea.get("area"), buildingRequest.getAreaFrom()));
         }
-        if(UtilFunction.checkInteger(buildingRequest.getAreaTo())){
+        if(UtilFunction.checkLong(buildingRequest.getAreaTo())){
             predicates.add(criteriaBuilder.lessThanOrEqualTo(joinBuildRentArea.get("area"), buildingRequest.getAreaTo()));
         }
-        if(UtilFunction.checkInteger(buildingRequest.getRentPriceFrom())){
+        if(UtilFunction.checkLong(buildingRequest.getRentPriceFrom())){
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("rentPrice"), buildingRequest.getRentPriceFrom()));
         }
-        if(UtilFunction.checkInteger(buildingRequest.getRentPriceTo())){
+        if(UtilFunction.checkLong(buildingRequest.getRentPriceTo())){
             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("rentPrice"), buildingRequest.getRentPriceTo()));
         }
         if(UtilFunction.checkString(buildingRequest.getManagerName())){
@@ -79,7 +79,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom{
         }
 
         Join<Building,User> userJoin = root.join("users", JoinType.LEFT); // lấy tất cả các bản ghi root kể cả không có bản ghi tương ứng là joinUser 
-        if(buildingRequest.getUser() != null && UtilFunction.checkInteger(buildingRequest.getUser().getId())){
+        if(buildingRequest.getUser() != null && UtilFunction.checkLong(buildingRequest.getUser().getId())){
             predicates.add(criteriaBuilder.equal(userJoin.get("id"), buildingRequest.getUser().getId()));
         }
 

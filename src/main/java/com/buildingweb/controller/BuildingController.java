@@ -45,19 +45,19 @@ public class BuildingController {
     }
 
     @PutMapping("/api/building")
-    public ResponseEntity<?> updateBuilding(@RequestParam Integer id, @RequestBody BuildingRequestAdd building){
+    public ResponseEntity<?> updateBuilding(@RequestParam Long id, @RequestBody BuildingRequestAdd building){
         buildingService.updateBuilding(id, building);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // @DeleteMapping("/api/building/{id}")
-    // public ResponseEntity<?> deleteBuilding(@PathVariable("id") Integer id){
+    // public ResponseEntity<?> deleteBuilding(@PathVariable("id") Long id){
     //     buildingService.deleteBuilding(id);
     //     return ResponseEntity.status(HttpStatus.OK).build();
     // }
 
     @DeleteMapping("/api/building/{ids}")
-    public ResponseEntity<?> deleteMultiBuilding(@PathVariable("ids") Integer[] ids){
+    public ResponseEntity<?> deleteMultiBuilding(@PathVariable("ids") Long[] ids){
         buildingService.deleteByListId(ids);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

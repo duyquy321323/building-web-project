@@ -31,7 +31,7 @@ public class BuildingConverter {
         return building;
     }
 
-    public Building buildingRequestAddToBuildingExisted(Integer id, BuildingRequestAdd buildingRequestAdd){
+    public Building buildingRequestAddToBuildingExisted(Long id, BuildingRequestAdd buildingRequestAdd){
         Building building = modelMapper.map(buildingRequestAdd, Building.class);
         building.setId(id);
         building.setDistrict(districtConverter.districtDTOToDistrict(buildingRequestAdd.getDistrict()));

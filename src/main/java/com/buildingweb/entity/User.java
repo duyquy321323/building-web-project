@@ -21,7 +21,7 @@ import lombok.Getter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "username")
     private String username;
@@ -29,7 +29,7 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "phoneNumber")
+    @Column(name = "phone")
     private String phoneNumber;
 
     @Column(name = "fullname")

@@ -13,20 +13,20 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "rent_area")
+@Table(name = "rentarea")
 public class RentArea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "code")
     private String code;
 
-    @Column(name = "area")
-    private Integer area;
+    @Column(name = "value")
+    private Long area;
 
     @ManyToOne // EAGER
-    @JoinColumn(name = "buildingId")
+    @JoinColumn(name = "buildingid")
     private Building building;
 
     @Override

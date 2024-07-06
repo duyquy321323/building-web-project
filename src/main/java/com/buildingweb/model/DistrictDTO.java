@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DistrictDTO {
-    private Integer id;
+    private Long id;
     private String code;
     private String name;
 }

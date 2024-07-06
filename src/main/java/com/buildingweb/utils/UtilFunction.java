@@ -8,7 +8,7 @@ public class UtilFunction {
         return false;
     }
 
-    public static boolean checkInteger(Integer i){
+    public static boolean checkLong(Long i){
         if(i != null) {
             return true;
         }

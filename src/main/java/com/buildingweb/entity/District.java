@@ -19,7 +19,7 @@ import lombok.Data;
 public class District {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "code")
     private String code;

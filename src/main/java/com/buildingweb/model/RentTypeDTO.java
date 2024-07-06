@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RentTypeDTO {
-    private Integer id;
+    private Long id;
     private String code;
     private String name;
 }

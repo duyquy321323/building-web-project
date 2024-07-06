@@ -24,12 +24,12 @@ import lombok.Data;
 public class Building {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @JoinColumn(name = "districtId", nullable = false)
+    @JoinColumn(name = "districtid", nullable = false)
     @ManyToOne
     private District district;
 
@@ -42,11 +42,11 @@ public class Building {
     @Column(name = "structure")
     private String structure;
 
-    @Column(name = "numberOfBasement")
-    private Integer numberOfBasement;
+    @Column(name = "numberofbasement")
+    private Long numberOfBasement;
 
-    @Column(name = "floorArea")
-    private Integer floorArea;
+    @Column(name = "floorarea")
+    private Long floorArea;
 
     @Column(name = "direction")
     private String direction;
@@ -54,46 +54,46 @@ public class Building {
     @Column(name = "level")
     private String level;
 
-    @Column(name = "rentPrice")
-    private Integer rentPrice;
+    @Column(name = "rentprice")
+    private Long rentPrice;
 
-    @Column(name = "rentPriceDescription")
+    @Column(name = "rentpricedescription")
     private String rentPriceDescription;
 
-    @Column(name = "serviceFee")
-    private Integer serviceFee;
+    @Column(name = "servicefee")
+    private Long serviceFee;
 
-    @Column(name = "carFee")
-    private Integer carFee;
+    @Column(name = "carfee")
+    private Long carFee;
 
-    @Column(name = "overtimeFee")
-    private Integer overtimeFee;
+    @Column(name = "overtimefee")
+    private Long overtimeFee;
 
-    @Column(name = "electricity")
-    private Integer electricity;
+    @Column(name = "electricityfee")
+    private Long electricity;
 
     @Column(name = "deposit")
-    private Integer deposit;
+    private Long deposit;
 
     @Column(name = "payment")
-    private Integer payment;
+    private Long payment;
 
-    @Column(name = "rentTime")
-    private Integer rentTime;
+    @Column(name = "renttime")
+    private Long rentTime;
 
-    @Column(name = "descorationTime")
-    private Integer descorationTime;
+    @Column(name = "decorationtime")
+    private Long descorationTime;
 
-    @Column(name = "managermentName")
+    @Column(name = "managername")
     private String managerName;
 
-    @Column(name = "brokerageFee")
-    private Integer brokerageFee;
+    @Column(name = "brokeragefee")
+    private Long brokerageFee;
 
     @Column(name = "note")
     private String note;
 
-    @Column(name = "managerPhonenumber")
+    @Column(name = "managerphonenumber")
     private String managerPhonenumber;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "building", fetch = FetchType.LAZY)
@@ -101,9 +101,9 @@ public class Building {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "assignmentBuilding",
-        joinColumns = @JoinColumn(name = "buildingId"),
-        inverseJoinColumns = @JoinColumn(name = "userId")
+        name = "assignmentbuilding",
+        joinColumns = @JoinColumn(name = "buildingid"),
+        inverseJoinColumns = @JoinColumn(name = "userid")
     )
     private List<User> users = new ArrayList<>();
 

@@ -39,7 +39,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public void updateBuilding(Integer id, BuildingRequestAdd building) {
+    public void updateBuilding(Long id, BuildingRequestAdd building) {
         if(buildingRepository.existsById(id)){
             Building newBuilding = buildingConverter.buildingRequestAddToBuildingExisted(id, building);
             buildingRepository.save(newBuilding);
@@ -48,7 +48,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     // @Override
-    // public void deleteBuilding(Integer id) {
+    // public void deleteBuilding(Long id) {
     //     Building building = buildingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Building is not found"));
     //     if(building != null){
     //         buildingRepository.delete(building);
@@ -56,7 +56,7 @@ public class BuildingServiceImpl implements BuildingService {
     // }
 
     @Override
-    public void deleteByListId(Integer[] ids) {
+    public void deleteByListId(Long[] ids) {
         buildingRepository.deleteByIdIn(ids);
     }
 

@@ -18,11 +18,11 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "rent_type")
+@Table(name = "renttype")
 public class RentType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "code")
     private String code;
@@ -33,8 +33,8 @@ public class RentType {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "buildingrenttype",
-        joinColumns = @JoinColumn(name = "rentTypeId"),
-        inverseJoinColumns = @JoinColumn(name = "buildingId")
+        joinColumns = @JoinColumn(name = "renttypeid"),
+        inverseJoinColumns = @JoinColumn(name = "buildingid")
     )
     private List<Building> buildings = new ArrayList<>();
 }
