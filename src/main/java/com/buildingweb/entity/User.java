@@ -29,11 +29,17 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "fullname")
+    private String fullname;
+
     @Column(name = "phone")
     private String phoneNumber;
 
-    @Column(name = "fullname")
-    private String fullname;
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "status")
+    private Integer status;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "users", fetch = FetchType.LAZY)
     private List<Building> buildings = new ArrayList<>();

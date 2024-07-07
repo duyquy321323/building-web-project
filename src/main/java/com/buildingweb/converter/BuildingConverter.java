@@ -15,26 +15,34 @@ public class BuildingConverter {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Autowired
-    private DistrictConverter districtConverter;
-
-    public BuildingResponse toBuildingResponse(Building building){
+    public BuildingResponse toBuildingResponse(Building building) {
+        StringBuilder address = new StringBuilder();
         BuildingResponse buildingResponse = modelMapper.map(building, BuildingResponse.class);
-        buildingResponse.setAddress(building.getStreet() + "," + building.getWard()+ "," + building.getDistrict().getName());
-        buildingResponse.setLeasedArea(building.getRentAreas().stream().map(item -> item.getArea().toString()).collect(Collectors.joining(",")));
+        if (building.getStreet() != null) {
+            address.append(building.getStreet());
+        }
+        if (building.getWard() != null) {
+            address.append("," + building.getWard());
+        }
+        if (building.getDistrict() != null) {
+            address.append("," + building.getDistrict().getDistrictName());
+        }
+        if (!address.isEmpty()) {
+            buildingResponse.setAddress(address.toString());
+        }
+        buildingResponse.setLeasedArea(building.getRentAreas().stream().map(item -> item.getValue().toString())
+                .collect(Collectors.joining(",")));
         return buildingResponse;
     }
 
-    public Building buildingRequestAddToBuilding(BuildingRequestAdd buildingRequestAdd){
+    public Building buildingRequestAddToBuilding(BuildingRequestAdd buildingRequestAdd) {
         Building building = modelMapper.map(buildingRequestAdd, Building.class);
-        building.setDistrict(districtConverter.districtDTOToDistrict(buildingRequestAdd.getDistrict()));
         return building;
     }
 
-    public Building buildingRequestAddToBuildingExisted(Long id, BuildingRequestAdd buildingRequestAdd){
+    public Building buildingRequestAddToBuildingExisted(Long id, BuildingRequestAdd buildingRequestAdd) {
         Building building = modelMapper.map(buildingRequestAdd, Building.class);
         building.setId(id);
-        building.setDistrict(districtConverter.districtDTOToDistrict(buildingRequestAdd.getDistrict()));
         return building;
     }
 }

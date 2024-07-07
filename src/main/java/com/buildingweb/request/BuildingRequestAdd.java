@@ -1,13 +1,13 @@
 package com.buildingweb.request;
 
-import com.buildingweb.model.DistrictDTO;
+import com.buildingweb.enums.District;
 
 import lombok.Getter;
 
 @Getter
 public class BuildingRequestAdd {
     private String name;
-    private DistrictDTO district;
+    private District district;
     private String ward;
     private String street;
     private String structure;

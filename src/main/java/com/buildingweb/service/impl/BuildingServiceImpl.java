@@ -26,6 +26,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Autowired
     private BuildingConverter buildingConverter;
+
     @Override
     public List<BuildingResponse> searchBuildingByBuildingRequest(BuildingRequestSearch buildingRequest) {
         List<Building> buildings = buildingRepository.findByBuildingRequestSearch(buildingRequest);
@@ -40,19 +41,20 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public void updateBuilding(Long id, BuildingRequestAdd building) {
-        if(buildingRepository.existsById(id)){
+        if (buildingRepository.existsById(id)) {
             Building newBuilding = buildingConverter.buildingRequestAddToBuildingExisted(id, building);
             buildingRepository.save(newBuilding);
-        }
-        else throw new EntityNotFoundException("Building is not found");
+        } else
+            throw new EntityNotFoundException("Building is not found");
     }
 
     // @Override
     // public void deleteBuilding(Long id) {
-    //     Building building = buildingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Building is not found"));
-    //     if(building != null){
-    //         buildingRepository.delete(building);
-    //     }
+    // Building building = buildingRepository.findById(id).orElseThrow(() -> new
+    // EntityNotFoundException("Building is not found"));
+    // if(building != null){
+    // buildingRepository.delete(building);
+    // }
     // }
 
     @Override

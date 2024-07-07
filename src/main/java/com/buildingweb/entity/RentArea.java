@@ -19,11 +19,8 @@ public class RentArea {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "code")
-    private String code;
-
     @Column(name = "value")
-    private Long area;
+    private Long value;
 
     @ManyToOne // EAGER
     @JoinColumn(name = "buildingid")
@@ -31,6 +28,6 @@ public class RentArea {
 
     @Override
     public String toString() {
-        return this.getArea().toString();
+        return this.getValue().toString();
     }
 }

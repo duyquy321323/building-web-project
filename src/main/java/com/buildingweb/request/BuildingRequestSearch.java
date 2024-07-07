@@ -2,8 +2,8 @@ package com.buildingweb.request;
 
 import java.util.List;
 
-import com.buildingweb.model.DistrictDTO;
-import com.buildingweb.model.RentTypeDTO;
+import com.buildingweb.enums.District;
+import com.buildingweb.enums.RentType;
 import com.buildingweb.model.UserDTO;
 
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Getter;
 public class BuildingRequestSearch {
     private String name;
     private Long floorArea;
-    private DistrictDTO district;
+    private District district;
     private String ward;
     private String street;
     private Long numberOfBasement;
@@ -25,5 +25,5 @@ public class BuildingRequestSearch {
     private String managerName;
     private String managerPhonenumber;
     private UserDTO user;
-    private List<RentTypeDTO> rentTypes;
+    private List<RentType> rentTypes;
 }

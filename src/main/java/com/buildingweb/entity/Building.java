@@ -1,10 +1,14 @@
 package com.buildingweb.entity;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,9 +16,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.buildingweb.enums.District;
 
 import lombok.Data;
 
@@ -29,15 +34,15 @@ public class Building {
     @Column(name = "name")
     private String name;
 
-    @JoinColumn(name = "districtid", nullable = false)
-    @ManyToOne
-    private District district;
+    @Column(name = "street")
+    private String street;
 
     @Column(name = "ward")
     private String ward;
 
-    @Column(name = "street")
-    private String street;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "district")
+    private District district;
 
     @Column(name = "structure")
     private String structure;
@@ -57,56 +62,60 @@ public class Building {
     @Column(name = "rentprice")
     private Long rentPrice;
 
-    @Column(name = "rentpricedescription")
+    @Column(name = "rentpricedescription", columnDefinition = "TEXT")
     private String rentPriceDescription;
 
     @Column(name = "servicefee")
-    private Long serviceFee;
+    private String serviceFee;
 
     @Column(name = "carfee")
-    private Long carFee;
+    private String carFee;
+
+    @Column(name = "motofee")
+    private String motoFee;
 
     @Column(name = "overtimefee")
-    private Long overtimeFee;
+    private String overtimeFee;
+
+    @Column(name = "waterfee")
+    private String waterFee;
 
     @Column(name = "electricityfee")
-    private Long electricity;
+    private String electricity;
 
     @Column(name = "deposit")
-    private Long deposit;
+    private String deposit;
 
     @Column(name = "payment")
-    private Long payment;
+    private String payment;
 
     @Column(name = "renttime")
-    private Long rentTime;
+    private String rentTime;
 
     @Column(name = "decorationtime")
-    private Long descorationTime;
+    private String descorationTime;
 
-    @Column(name = "managername")
-    private String managerName;
+    @Column(name = "brokeragefee", precision = 13, scale = 2)
+    private BigDecimal brokerageFee;
 
-    @Column(name = "brokeragefee")
-    private Long brokerageFee;
+    // @Enumerated(value = EnumType.STRING)
+    @Column(name = "type")
+    private String rentTypes;
 
     @Column(name = "note")
     private String note;
 
-    @Column(name = "managerphonenumber")
+    @Column(name = "managername")
+    private String managerName;
+
+    @Column(name = "managerphone")
     private String managerPhonenumber;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "building", fetch = FetchType.LAZY)
     private List<RentArea> rentAreas = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "assignmentbuilding",
-        joinColumns = @JoinColumn(name = "buildingid"),
-        inverseJoinColumns = @JoinColumn(name = "userid")
-    )
+    @JoinTable(name = "assignmentbuilding", joinColumns = @JoinColumn(name = "buildingid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
     private List<User> users = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "buildings", fetch = FetchType.LAZY)
-    private List<RentType> rentTypes = new ArrayList<>();
 }
