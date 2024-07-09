@@ -1,8 +1,8 @@
 package com.buildingweb.entity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -111,11 +111,12 @@ public class Building {
     @Column(name = "managerphone")
     private String managerPhonenumber;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "building", fetch = FetchType.LAZY)
-    private List<RentArea> rentAreas = new ArrayList<>();
+    @OneToMany(cascade = { CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.REMOVE }, mappedBy = "building", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<RentArea> rentAreas = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "assignmentbuilding", joinColumns = @JoinColumn(name = "buildingid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
-    private List<User> users = new ArrayList<>();
-
+    private Set<User> users = new HashSet<>();
 }

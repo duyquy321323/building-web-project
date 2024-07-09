@@ -1,9 +1,8 @@
 package com.buildingweb.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,10 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import lombok.Getter;
+import lombok.Data;
 
 @Entity
-@Getter
+@Data
 @Table(name = "user")
 public class User {
     @Id
@@ -41,6 +40,9 @@ public class User {
     @Column(name = "status")
     private Integer status;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "users", fetch = FetchType.LAZY)
-    private List<Building> buildings = new ArrayList<>();
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    private Set<Building> buildings = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    private Set<Role> roles = new HashSet<>();
 }

@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.buildingweb.exception.custom.EntityNotFoundException;
+import com.buildingweb.exception.custom.PasswordNotMatchException;
 import com.buildingweb.response.ExceptionResponse;
 
 @ControllerAdvice
 public class HandlerException {
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> throwNullEntityResponse(DataIntegrityViolationException ex){
+    public ResponseEntity<?> throwNullEntityResponse(DataIntegrityViolationException ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setStatus(HttpStatus.BAD_REQUEST);
         exceptionResponse.setMessage(ex.getMessage());
@@ -27,12 +28,23 @@ public class HandlerException {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> throwEntityNotFound(EntityNotFoundException ex){
+    public ResponseEntity<?> throwEntityNotFound(EntityNotFoundException ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setStatus(HttpStatus.NOT_FOUND);
         exceptionResponse.setMessage(ex.getMessage());
         List<String> details = new ArrayList<>();
         details.add("Data not found in entity. Check please");
+        exceptionResponse.setDetails(details);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(PasswordNotMatchException.class)
+    public ResponseEntity<?> throwEntityNotFound(PasswordNotMatchException ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setStatus(HttpStatus.NOT_FOUND);
+        exceptionResponse.setMessage(ex.getMessage());
+        List<String> details = new ArrayList<>();
+        details.add("Please check your password");
         exceptionResponse.setDetails(details);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
