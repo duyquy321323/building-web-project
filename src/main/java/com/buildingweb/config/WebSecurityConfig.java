@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.buildingweb.filter.JwtTokenFilter;
 import com.buildingweb.security.CustomUserDetailsSevice;
 
+@SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity // đánh dấu rằng lớp này là lớp cấu hình bảo mật
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {

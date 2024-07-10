@@ -21,6 +21,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.SneakyThrows;
 
+@SuppressWarnings("deprecation")
 @Service
 public class JwtServiceImpl implements JwtService {
 
