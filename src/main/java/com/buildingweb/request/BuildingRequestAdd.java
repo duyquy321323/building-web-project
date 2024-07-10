@@ -1,11 +1,14 @@
 package com.buildingweb.request;
 
+import javax.validation.constraints.NotBlank;
+
 import com.buildingweb.enums.District;
 
 import lombok.Getter;
 
 @Getter
 public class BuildingRequestAdd {
+    @NotBlank(message = "name is not blank")
     private String name;
     private District district;
     private String ward;

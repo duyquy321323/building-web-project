@@ -1,7 +1,7 @@
 package com.buildingweb.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,9 +41,9 @@ public class User {
     private Integer status;
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
-    private Set<Building> buildings = new HashSet<>();
+    private List<Building> buildings = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
 
 }

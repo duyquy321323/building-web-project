@@ -24,6 +24,7 @@ public class UserConverter {
     public User registerRequestToUser(RegisterRequest request) {
         User user = modelMapper.map(request, User.class);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setStatus(1);
         return user;
     }
 }

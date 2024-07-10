@@ -18,9 +18,9 @@ public class CustomUserDetails implements UserDetails {
 
     private String username;
     private String password;
-    private Collection<? extends GrantedAuthority> authorities;
+    private Collection<? extends GrantedAuthority> authorities; // danh sách quyền của người dùng
 
-    public static UserDetails build(User user) {
+    public static UserDetails build(User user) { // hàm xây dựng chi tiết người dùng từ entity User
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : user.getRoles()) {
             if (role.getCode().equals("MANAGER")) {
@@ -48,22 +48,22 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
+    public boolean isAccountNonExpired() { // kiểm tra tài khoản có bị hết hạn hay không
         return true;
     }
 
     @Override
-    public boolean isAccountNonLocked() {
+    public boolean isAccountNonLocked() { // kiểm tra tài khoản có bị khóa hay không
         return true;
     }
 
     @Override
-    public boolean isCredentialsNonExpired() {
+    public boolean isCredentialsNonExpired() { // kiểm tra xem thông tin xác thực có bị hết hạn hay không
         return true;
     }
 
     @Override
-    public boolean isEnabled() {
+    public boolean isEnabled() { // kiểm tra xem tài khoản có được kích hoạt hay không
         return true;
     }
 

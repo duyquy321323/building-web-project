@@ -36,14 +36,18 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     public UserDTO login(LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername());
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) { // check pass
             throw new PasswordNotMatchException();
         }
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken( // tạo đối
+                                                                                                           // tượng yêu
+                                                                                                           // cầu xác
+                                                                                                           // thực
                 userDetails.getUsername(), request.getPassword(), userDetails.getAuthorities());
-        authenticationManager.authenticate(authenticationToken);
-        String token = jwtService.generateToken(user);
+        authenticationManager.authenticate(authenticationToken);// cho yêu cầu đấy vào đối tượng quản lý xác
+                                                                // thực
+        String token = jwtService.generateToken(user); // tạo token cho user
         UserDTO userDTO = userConverter.toUserDTO(user);
         userDTO.setToken(token);
         return userDTO;
