@@ -11,4 +11,5 @@ public class UserDTO {
     private Long id;
     private String phoneNumber;
     private String fullname;
+    private String token;
 }
