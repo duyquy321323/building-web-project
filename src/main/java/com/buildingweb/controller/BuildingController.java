@@ -3,11 +3,14 @@ package com.buildingweb.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/buildings")
 public class BuildingController {
     private final BuildingService buildingService;
+    private final RememberMeServices rememberMeServices;
 
     @GetMapping("/")
     public ResponseEntity<?> getBuilding(@ModelAttribute BuildingRequestSearch buildingRequest) {
@@ -72,7 +76,8 @@ public class BuildingController {
 
     @PutMapping("/")
     public ResponseEntity<?> updateBuilding(@RequestParam Long id, @Valid @RequestBody BuildingRequestAdd building,
-            BindingResult result) {
+            BindingResult result, HttpServletRequest request, HttpServletResponse response) {
+        rememberMeServices.autoLogin(request, response);
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
                     .collect(Collectors.toList());

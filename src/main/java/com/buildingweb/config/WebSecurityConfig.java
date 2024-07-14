@@ -3,6 +3,7 @@ package com.buildingweb.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,20 +13,30 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
 import com.buildingweb.filter.JwtTokenFilter;
 import com.buildingweb.security.CustomUserDetailsSevice;
 
+import org.springframework.security.config.Customizer;
+
+import lombok.RequiredArgsConstructor;
+
 @SuppressWarnings("deprecation")
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity // đánh dấu rằng lớp này là lớp cấu hình bảo mật
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${key.remember-me}")
+    private String rememberMeKey;
+
     @Bean
+    @Override
     public UserDetailsService userDetailsService() { // hàm cung cấp cách lấy thông tin người dùng
         return new CustomUserDetailsSevice();
     }
@@ -62,23 +73,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(authenticationProvider()); // cấu hình inject đối tượng DAO đó vào web
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception { // cấu hình phân quyền web
-        http.csrf().disable()
-                .cors()
-                .and()
-                .authorizeRequests() // tạo quy tắc phân quyền
-                .antMatchers("/account/**").permitAll()
-                .antMatchers("/buildings/**").hasAnyRole("MANAGER")
-                .anyRequest().authenticated()
-                .and().rememberMe()
-                .key(secret)
-                .tokenValiditySeconds(700000000);
-        // .and()
-        // .addFilterBefore(jwtTokenFilter(),
-        // UsernamePasswordAuthenticationFilter.class) // thêm 1 lớp filter
-        // // token trước lớp phân
-        // // quyền;
-        // ;
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        TokenBasedRememberMeServices tokenBasedRememberMeServices = new TokenBasedRememberMeServices(secret,
+                userDetailsService());
+        tokenBasedRememberMeServices.setParameter("remember-me");
+        tokenBasedRememberMeServices.setTokenValiditySeconds(500);
+        return tokenBasedRememberMeServices;
     }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
+                .authorizeRequests(requests -> requests
+                        .antMatchers(HttpMethod.POST, "/account/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/buildings/**").hasAnyRole("MANAGER", "USER")
+                        .antMatchers(HttpMethod.POST, "/buildings/**").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.PUT, "/buildings/**").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.DELETE, "/buildings/**").hasRole("MANAGER")
+                        .anyRequest().authenticated())
+                .rememberMe(rm -> rm.rememberMeServices(
+                        rememberMeServices()).key(rememberMeKey))
+                .addFilterBefore(jwtTokenFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .logout(lo -> lo.deleteCookies("JSESSIONID", "remember-me").permitAll());
+    }
+
 }

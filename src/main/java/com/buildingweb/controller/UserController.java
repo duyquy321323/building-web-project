@@ -3,6 +3,8 @@ package com.buildingweb.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -28,13 +30,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, BindingResult result) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request,
+            BindingResult result, HttpServletRequest request2, HttpServletResponse response) {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
                     .collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userService.login(request));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.login(request, request2, response));
     }
 
     @PostMapping("/register")

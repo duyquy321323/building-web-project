@@ -20,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import lombok.NoArgsConstructor;
@@ -33,12 +34,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private RememberMeServices rememberMeServices;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException { // hàm này dùng để kiểm tra là request có cần xác thực mới vào được
                                                    // không, nếu có thì đã xác thực chưa, nếu chưa thì không cho vào
+        try {
+            if (rememberMeServices.autoLogin(request, response)
+                    .isAuthenticated()) { // nếu cookie remember me vẫn còn
+                filterChain.doFilter(request, response);
+                return;
+            }
+        } catch (Exception ex) {
+        }
         try {
             if (isBypassToken(request)) { // nếu request không cần xác thực
                 filterChain.doFilter(request, response); // thông báo rằng bộ lọc token đã hoàn thành nhiệm vụ và chuyển

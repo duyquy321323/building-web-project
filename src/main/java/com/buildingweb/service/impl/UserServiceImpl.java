@@ -1,10 +1,16 @@
 package com.buildingweb.service.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.stereotype.Service;
 
 import com.buildingweb.converter.UserConverter;
@@ -31,10 +37,11 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final RememberMeServices rememberMeServices;
 
     @Override
     @SneakyThrows
-    public UserDTO login(LoginRequest request) {
+    public UserDTO login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response) {
         User user = userRepository.findByUsername(request.getUsername());
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) { // check pass
             throw new PasswordNotMatchException();
@@ -44,9 +51,11 @@ public class UserServiceImpl implements UserService {
                                                                                                            // tượng yêu
                                                                                                            // cầu xác
                                                                                                            // thực
-                userDetails.getUsername(), request.getPassword(), userDetails.getAuthorities());
-        authenticationManager.authenticate(authenticationToken);// cho yêu cầu đấy vào đối tượng quản lý xác
-                                                                // thực
+                request.getUsername(), request.getPassword(), userDetails.getAuthorities());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);// cho yêu cầu đấy vào
+                                                                                                // đối tượng quản lý xác
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        rememberMeServices.loginSuccess(request2, response, authentication);
         String token = jwtService.generateToken(user); // tạo token cho user
         UserDTO userDTO = userConverter.toUserDTO(user);
         userDTO.setToken(token);
