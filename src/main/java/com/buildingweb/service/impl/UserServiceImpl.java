@@ -1,8 +1,12 @@
 package com.buildingweb.service.impl;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,10 +18,13 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.stereotype.Service;
 
 import com.buildingweb.converter.UserConverter;
+import com.buildingweb.entity.Building;
 import com.buildingweb.entity.User;
 import com.buildingweb.exception.custom.EntityAlreadyExistedException;
+import com.buildingweb.exception.custom.NotStaffRoleException;
 import com.buildingweb.exception.custom.PasswordNotMatchException;
 import com.buildingweb.model.UserDTO;
+import com.buildingweb.repository.BuildingRepository;
 import com.buildingweb.repository.UserRepository;
 import com.buildingweb.request.LoginRequest;
 import com.buildingweb.request.RegisterRequest;
@@ -38,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final RememberMeServices rememberMeServices;
+    private final BuildingRepository buildingRepository;
 
     @Override
     @SneakyThrows
@@ -65,11 +73,37 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public void register(RegisterRequest request) {
+        if (request.getPassword().equals(request.getComfirmPassword()) == false) {
+            throw new PasswordNotMatchException("Confirm password is not match!");
+        }
         User user = userRepository.findByUsername(request.getUsername());
         if (user != null) {
             throw new EntityAlreadyExistedException();
         }
         user = userConverter.registerRequestToUser(request);
         userRepository.save(user);
+    }
+
+    @Override
+    public Page<UserDTO> getAllStaff(Pageable pageable) {
+        return userRepository.findAllByRoleAndStatus("STAFF", 1, pageable)
+                .map(it -> userConverter.toUserDTO(it));
+    }
+
+    @Override
+    public void deliverTheBuilding(List<Long> id, Long buildingId) {
+
+        for (Long userId : id) {
+            if (!userRepository.findById(userId).get().isStaff()) {
+                throw new NotStaffRoleException();
+            }
+        }
+
+        Building building = buildingRepository.findById(buildingId).get();
+        if (building == null)
+            return;
+        List<User> users = userRepository.findByIdIn(id);
+        building.setUsers(users);
+        buildingRepository.save(building);
     }
 }

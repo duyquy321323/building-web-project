@@ -2,11 +2,15 @@ package com.buildingweb.request;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.buildingweb.enums.District;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class BuildingRequestAdd {
     @NotBlank(message = "name is not blank")
     private String name;
@@ -32,4 +36,5 @@ public class BuildingRequestAdd {
     private Long brokerageFee;
     private String note;
     private String managerPhonenumber;
+    private MultipartFile linkOfBuilding;
 }

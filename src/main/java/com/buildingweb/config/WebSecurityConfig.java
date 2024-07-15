@@ -87,12 +87,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeRequests(requests -> requests
-                        .antMatchers(HttpMethod.POST, "/account/**").permitAll()
-                        .antMatchers(HttpMethod.GET, "/buildings/**").hasAnyRole("MANAGER", "USER")
-                        .antMatchers(HttpMethod.POST, "/buildings/**").hasRole("MANAGER")
-                        .antMatchers(HttpMethod.PUT, "/buildings/**").hasRole("MANAGER")
-                        .antMatchers(HttpMethod.DELETE, "/buildings/**").hasRole("MANAGER")
-                        .anyRequest().authenticated())
+                        .antMatchers(HttpMethod.POST, "/login", "/register", "/logout").permitAll()
+                        .antMatchers(HttpMethod.GET, "/buildings/", "/swagger-ui/**", "/swagger-config.js",
+                                "/v3/api-docs/**", "/v3/api-docs")
+                        .permitAll()
+                        .antMatchers(HttpMethod.POST, "/buildings/").hasAnyRole("MANAGER", "STAFF")
+                        .antMatchers(HttpMethod.PUT, "/buildings/").hasAnyRole("MANAGER", "STAFF")
+                        .antMatchers(HttpMethod.DELETE, "/buildings/").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.GET, "/staffs").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.POST, "/buildings/users").hasRole("MANAGER")
+                        .anyRequest().denyAll())
                 .rememberMe(rm -> rm.rememberMeServices(
                         rememberMeServices()).key(rememberMeKey))
                 .addFilterBefore(jwtTokenFilter(),

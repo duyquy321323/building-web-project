@@ -3,14 +3,13 @@ package com.buildingweb.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,14 +18,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.buildingweb.request.BuildingRequestAdd;
 import com.buildingweb.request.BuildingRequestSearch;
 import com.buildingweb.service.BuildingService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -35,36 +37,36 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/buildings")
 public class BuildingController {
     private final BuildingService buildingService;
-    private final RememberMeServices rememberMeServices;
 
+    // Lấy tất cả tòa nhà
     @GetMapping("/")
-    public ResponseEntity<?> getBuilding(@ModelAttribute BuildingRequestSearch buildingRequest) {
+    public ResponseEntity<?> getBuilding(@ModelAttribute BuildingRequestSearch buildingRequest,
+            @RequestParam(required = false, defaultValue = "0") Integer pageNo,
+            @RequestParam(required = false, defaultValue = "2") Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(buildingService.searchBuildingByBuildingRequest(buildingRequest));
+                .body(buildingService.searchBuildingByBuildingRequest(buildingRequest, pageable));
     }
 
+    // Lấy tòa nhà theo tên
     @GetMapping("/{name}")
-    public ResponseEntity<?> getBuildingByNameContaining(@PathVariable("name") String name) {
-        return ResponseEntity.status(HttpStatus.OK).body(buildingService.findByNameContaining(name));
+    public ResponseEntity<?> getBuildingByNameContaining(@PathVariable("name") String name,
+            @RequestParam(required = false, defaultValue = "0") Integer pageNo,
+            @RequestParam(required = false, defaultValue = "2") Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        return ResponseEntity.status(HttpStatus.OK).body(buildingService.findByNameContaining(name, pageable));
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addBuilding(@Valid @RequestBody BuildingRequestAdd buildingRequest, BindingResult result) { // biến
-                                                                                                                         // dùng
-                                                                                                                         // để
-                                                                                                                         // bắt
-                                                                                                                         // lỗi
-                                                                                                                         // valid
-                                                                                                                         // dùng
-                                                                                                                         // ở
-                                                                                                                         // sau
-                                                                                                                         // tham
-                                                                                                                         // số
-                                                                                                                         // requestbody
-                                                                                                                         // cần
-                                                                                                                         // trả
-                                                                                                                         // ra
-                                                                                                                         // lỗi
+    @Operation(requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = BuildingRequestAdd.class))))
+    public ResponseEntity<?> addBuilding(@Valid BuildingRequestAdd buildingRequest, BindingResult result) { // biến
+                                                                                                            // dùng
+                                                                                                            // để
+                                                                                                            // bắt
+                                                                                                            // lỗi
+        // valid dùng ở sau tham số
+        // requestbody cần trả ra
+        // lỗi
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
                     .collect(Collectors.toList());
@@ -74,10 +76,11 @@ public class BuildingController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    // Sửa tòa nhà
     @PutMapping("/")
-    public ResponseEntity<?> updateBuilding(@RequestParam Long id, @Valid @RequestBody BuildingRequestAdd building,
-            BindingResult result, HttpServletRequest request, HttpServletResponse response) {
-        rememberMeServices.autoLogin(request, response);
+    @Operation(requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = BuildingRequestAdd.class))))
+    public ResponseEntity<?> updateBuilding(@RequestParam Long id, @Valid BuildingRequestAdd building,
+            BindingResult result) {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
                     .collect(Collectors.toList());
@@ -87,12 +90,7 @@ public class BuildingController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<?> deleteBuilding(@PathVariable("id") Long id){
-    // buildingService.deleteBuilding(id);
-    // return ResponseEntity.status(HttpStatus.OK).build();
-    // }
-
+    // Xóa tòa nhà theo danh sách id
     @DeleteMapping("/{ids}")
     public ResponseEntity<?> deleteMultiBuilding(@PathVariable("ids") Long[] ids) {
         buildingService.deleteByListId(ids);

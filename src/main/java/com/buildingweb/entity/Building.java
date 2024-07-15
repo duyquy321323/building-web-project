@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -94,7 +95,6 @@ public class Building extends BaseEntity {
     @Column(name = "brokeragefee", precision = 13, scale = 2)
     private BigDecimal brokerageFee;
 
-    // @Enumerated(value = EnumType.STRING)
     @Column(name = "type")
     private String rentTypes;
 
@@ -106,6 +106,10 @@ public class Building extends BaseEntity {
 
     @Column(name = "managerphone")
     private String managerPhonenumber;
+
+    @Lob
+    @Column(name = "linkofbuilding")
+    private byte[] linkOfBuilding;
 
     @OneToMany(cascade = { CascadeType.PERSIST,
             CascadeType.MERGE,

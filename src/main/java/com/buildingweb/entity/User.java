@@ -42,4 +42,22 @@ public class User extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     private List<Role> roles = new ArrayList<>();
 
+    public Boolean isStaff() {
+        for (Role role : roles) {
+            if (role.getCode().equals("STAFF")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Boolean isManager() {
+        for (Role role : roles) {
+            if (role.getCode().equals("MANAGER")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

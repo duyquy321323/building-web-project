@@ -50,6 +50,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
         } catch (Exception ex) {
+            System.out.println(ex);
         }
         try {
             if (isBypassToken(request)) { // nếu request không cần xác thực
@@ -112,7 +113,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final List<Pair<String, String>> bypassTokens = Arrays.asList( // thêm các api và http method không cần xác thực
                                                                        // vào
                 Pair.of("/buildings/", "GET"),
-                Pair.of("/account/", "POST"));
+                Pair.of("/login", "POST"),
+                Pair.of("/register", "POST"),
+                Pair.of("/logout", "POST"),
+                Pair.of("/swagger-ui", "GET"),
+                Pair.of("/v3/api-docs", "GET"),
+                Pair.of("/swagger-config.js", "GET"));
         for (Pair<String, String> bypassToken : bypassTokens) {
             if (request.getServletPath().contains(bypassToken.getFirst()) // kiểm tra xem đường api được pass có chứa
                                                                           // trong url request hay không
@@ -123,4 +129,47 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
         return false;
     }
+
+    /**
+     * @return JwtService return the jwtService
+     */
+    public JwtService getJwtService() {
+        return jwtService;
+    }
+
+    /**
+     * @param jwtService the jwtService to set
+     */
+    public void setJwtService(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
+
+    /**
+     * @return UserDetailsService return the userDetailsService
+     */
+    public UserDetailsService getUserDetailsService() {
+        return userDetailsService;
+    }
+
+    /**
+     * @param userDetailsService the userDetailsService to set
+     */
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    /**
+     * @return RememberMeServices return the rememberMeServices
+     */
+    public RememberMeServices getRememberMeServices() {
+        return rememberMeServices;
+    }
+
+    /**
+     * @param rememberMeServices the rememberMeServices to set
+     */
+    public void setRememberMeServices(RememberMeServices rememberMeServices) {
+        this.rememberMeServices = rememberMeServices;
+    }
+
 }

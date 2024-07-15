@@ -10,6 +10,7 @@ public class RegisterRequest {
     private String username;
     @NotBlank(message = "password id not blank")
     private String password;
+    private String comfirmPassword;
     private String fullname;
     private String phoneNumber;
     private String email;

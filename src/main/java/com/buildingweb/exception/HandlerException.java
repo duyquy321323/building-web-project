@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.buildingweb.exception.custom.EntityNotFoundException;
+import com.buildingweb.exception.custom.NotStaffRoleException;
 import com.buildingweb.exception.custom.PasswordNotMatchException;
 import com.buildingweb.response.ExceptionResponse;
 
@@ -45,6 +46,17 @@ public class HandlerException {
         exceptionResponse.setMessage(ex.getMessage());
         List<String> details = new ArrayList<>();
         details.add("Please check your password");
+        exceptionResponse.setDetails(details);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(NotStaffRoleException.class)
+    public ResponseEntity<?> throwNotStaffRole(NotStaffRoleException ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setStatus(HttpStatus.NOT_FOUND);
+        exceptionResponse.setMessage(ex.getMessage());
+        List<String> details = new ArrayList<>();
+        details.add("Please check your request");
         exceptionResponse.setDetails(details);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }

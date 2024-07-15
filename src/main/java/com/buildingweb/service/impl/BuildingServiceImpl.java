@@ -1,10 +1,10 @@
 package com.buildingweb.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.buildingweb.converter.BuildingConverter;
@@ -17,6 +17,7 @@ import com.buildingweb.response.BuildingResponse;
 import com.buildingweb.service.BuildingService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @Service
 @RequiredArgsConstructor
@@ -28,34 +29,34 @@ public class BuildingServiceImpl implements BuildingService {
     private BuildingConverter buildingConverter;
 
     @Override
-    public List<BuildingResponse> searchBuildingByBuildingRequest(BuildingRequestSearch buildingRequest) {
-        List<Building> buildings = buildingRepository.findByBuildingRequestSearch(buildingRequest);
-        return buildings.stream().map((it) -> buildingConverter.toBuildingResponse(it)).collect(Collectors.toList());
+    public Page<BuildingResponse> searchBuildingByBuildingRequest(BuildingRequestSearch buildingRequest,
+            Pageable pageable) {
+        Page<Building> buildings = buildingRepository.findByBuildingRequestSearch(buildingRequest, pageable);
+        return buildings.map((it) -> buildingConverter.toBuildingResponse(it));
     }
 
     @Override
+    @SneakyThrows
     public void addNewBuilding(BuildingRequestAdd buildingRequest) {
         Building building = buildingConverter.buildingRequestAddToBuilding(buildingRequest);
+        if (buildingRequest.getLinkOfBuilding() != null) {
+            building.setLinkOfBuilding(buildingRequest.getLinkOfBuilding().getBytes());
+        }
         buildingRepository.save(building);
     }
 
     @Override
+    @SneakyThrows
     public void updateBuilding(Long id, BuildingRequestAdd building) {
         if (buildingRepository.existsById(id)) {
             Building newBuilding = buildingConverter.buildingRequestAddToBuildingExisted(id, building);
+            if (building.getLinkOfBuilding() != null) {
+                newBuilding.setLinkOfBuilding(building.getLinkOfBuilding().getBytes());
+            }
             buildingRepository.save(newBuilding);
         } else
             throw new EntityNotFoundException("Building is not found");
     }
-
-    // @Override
-    // public void deleteBuilding(Long id) {
-    // Building building = buildingRepository.findById(id).orElseThrow(() -> new
-    // EntityNotFoundException("Building is not found"));
-    // if(building != null){
-    // buildingRepository.delete(building);
-    // }
-    // }
 
     @Override
     public void deleteByListId(Long[] ids) {
@@ -63,8 +64,8 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public List<BuildingResponse> findByNameContaining(String s) {
-        List<Building> buildings = buildingRepository.findByNameContaining(s);
-        return buildings.stream().map((it) -> buildingConverter.toBuildingResponse(it)).collect(Collectors.toList());
+    public Page<BuildingResponse> findByNameContaining(String s, Pageable pageable) {
+        Page<Building> buildings = buildingRepository.findByNameContaining(s, pageable);
+        return buildings.map((it) -> buildingConverter.toBuildingResponse(it));
     }
 }

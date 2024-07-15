@@ -12,6 +12,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import com.buildingweb.entity.Building;
 import com.buildingweb.entity.RentArea;
 import com.buildingweb.entity.User;
@@ -26,7 +30,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public List<Building> findByBuildingRequestSearch(BuildingRequestSearch buildingRequest) {
+    public Page<Building> findByBuildingRequestSearch(BuildingRequestSearch buildingRequest, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy đối tượng CriteriaBuilder từ
                                                                               // EntityManager
         CriteriaQuery<Building> query = criteriaBuilder.createQuery(Building.class); // khai báo kiểu dữ liệu mà bạn
@@ -102,6 +106,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
             query.where(finalPredicate);
         }
         query.select(root).distinct(true);
-        return entityManager.createQuery(query).getResultList();
+        List<Building> buildings = entityManager.createQuery(query).getResultList();
+        return new PageImpl<>(buildings, pageable, buildings.size());
     }
 }

@@ -1,13 +1,15 @@
 package com.buildingweb.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.buildingweb.request.BuildingRequestAdd;
 import com.buildingweb.request.BuildingRequestSearch;
 import com.buildingweb.response.BuildingResponse;
 
 public interface BuildingService {
-    public List<BuildingResponse> searchBuildingByBuildingRequest(BuildingRequestSearch buildingRequest);
+    public Page<BuildingResponse> searchBuildingByBuildingRequest(BuildingRequestSearch buildingRequest,
+            Pageable pageable);
 
     public void addNewBuilding(BuildingRequestAdd buildingRequest);
 
@@ -16,5 +18,5 @@ public interface BuildingService {
     // public void deleteBuilding(Long id);
     public void deleteByListId(Long[] ids);
 
-    public List<BuildingResponse> findByNameContaining(String s);
+    public Page<BuildingResponse> findByNameContaining(String s, Pageable pageable);
 }
