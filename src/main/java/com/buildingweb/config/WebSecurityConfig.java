@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
@@ -24,10 +24,11 @@ import org.springframework.security.config.Customizer;
 
 import lombok.RequiredArgsConstructor;
 
+@SuppressWarnings("deprecation")
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity // đánh dấu rằng lớp này là lớp cấu hình bảo mật
-public class WebSecurityConfig {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${jwt.secret}")
     private String secret;
 
@@ -35,6 +36,7 @@ public class WebSecurityConfig {
     private String rememberMeKey;
 
     @Bean
+    @Override
     public UserDetailsService userDetailsService() { // hàm cung cấp cách lấy thông tin người dùng
         return new CustomUserDetailsSevice();
     }
@@ -54,16 +56,21 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception { // tạo đối tượng authenticationManager
-        // để xử lý xác thực
-        return authenticationConfiguration.getAuthenticationManager();
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception { // tạo đối tượng authenticationManager
+                                                                                // để xử lý xác thực
+        return super.authenticationManagerBean();
     }
 
     @Bean
     public JwtTokenFilter jwtTokenFilter() { // tạo đối tượng JwtTokenFilter kế thừa class OncePerRequestFilter để tạo 1
                                              // lớp filter token
         return new JwtTokenFilter();
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider()); // cấu hình inject đối tượng DAO đó vào web
     }
 
     @Bean
@@ -75,7 +82,8 @@ public class WebSecurityConfig {
         return tokenBasedRememberMeServices;
     }
 
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeRequests(requests -> requests
@@ -94,8 +102,6 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtTokenFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .logout(lo -> lo.deleteCookies("JSESSIONID", "remember-me").permitAll());
-        http.authenticationProvider(authenticationProvider());
-        return http.build();
     }
 
 }
