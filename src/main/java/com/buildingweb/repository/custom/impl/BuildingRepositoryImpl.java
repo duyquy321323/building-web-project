@@ -90,8 +90,8 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 
         Join<Building, User> userJoin = root.join("users", JoinType.LEFT); // lấy tất cả các bản ghi root kể cả không có
                                                                            // bản ghi tương ứng là joinUser
-        if (buildingRequest.getUser() != null && UtilFunction.checkLong(buildingRequest.getUser().getId())) {
-            predicates.add(criteriaBuilder.equal(userJoin.get("id"), buildingRequest.getUser().getId()));
+        if (UtilFunction.checkLong(buildingRequest.getUserId())) {
+            predicates.add(criteriaBuilder.equal(userJoin.get("id"), buildingRequest.getUserId()));
         }
 
         if (buildingRequest.getRentTypes() != null && !buildingRequest.getRentTypes().isEmpty()) {

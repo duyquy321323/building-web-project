@@ -28,17 +28,17 @@ import lombok.Setter;
 @Table(name = "building")
 public class Building extends BaseEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "street")
+    @Column(name = "street", nullable = false)
     private String street;
 
-    @Column(name = "ward")
+    @Column(name = "ward", nullable = false)
     private String ward;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "district")
+    @Column(name = "district", nullable = false)
     private District district;
 
     @Column(name = "structure")
@@ -47,7 +47,7 @@ public class Building extends BaseEntity {
     @Column(name = "numberofbasement")
     private Long numberOfBasement;
 
-    @Column(name = "floorarea")
+    @Column(name = "floorarea", nullable = false)
     private Long floorArea;
 
     @Column(name = "direction")
@@ -56,7 +56,7 @@ public class Building extends BaseEntity {
     @Column(name = "level")
     private String level;
 
-    @Column(name = "rentprice")
+    @Column(name = "rentprice", nullable = false)
     private Long rentPrice;
 
     @Column(name = "rentpricedescription", columnDefinition = "TEXT")
@@ -95,7 +95,7 @@ public class Building extends BaseEntity {
     @Column(name = "brokeragefee", precision = 13, scale = 2)
     private BigDecimal brokerageFee;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String rentTypes;
 
     @Column(name = "note")
@@ -117,6 +117,6 @@ public class Building extends BaseEntity {
     private List<RentArea> rentAreas = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "assignmentbuilding", joinColumns = @JoinColumn(name = "buildingid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
+    @JoinTable(name = "assignmentbuilding", joinColumns = @JoinColumn(name = "buildingid", nullable = false), inverseJoinColumns = @JoinColumn(name = "staffid", nullable = false))
     private List<User> users = new ArrayList<>();
 }

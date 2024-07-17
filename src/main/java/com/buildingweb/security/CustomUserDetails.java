@@ -23,9 +23,9 @@ public class CustomUserDetails implements UserDetails {
     public static UserDetails build(User user) { // hàm xây dựng chi tiết người dùng từ entity User
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : user.getRoles()) {
-            if (role.getCode().equals("MANAGER")) {
+            if (role.getCode().toString().equals("MANAGER")) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
-            } else if (role.getCode().equals("STAFF")) {
+            } else if (role.getCode().toString().equals("STAFF")) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_STAFF"));
             }
         }

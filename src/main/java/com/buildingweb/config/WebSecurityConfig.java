@@ -91,14 +91,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.POST, "/login", "/register", "/logout",
                                 "/buildings/search")
                         .permitAll()
-                        .antMatchers(HttpMethod.GET, "/swagger-ui/**",
+                        .antMatchers(HttpMethod.GET, "/buildings/", "/swagger-ui/**",
                                 "/v3/api-docs/**", "/v3/api-docs", "/API license URL")
                         .permitAll()
                         .antMatchers(HttpMethod.POST, "/buildings/new").hasAnyRole("MANAGER", "STAFF")
                         .antMatchers(HttpMethod.PUT, "/buildings/").hasAnyRole("MANAGER", "STAFF")
-                        .antMatchers(HttpMethod.DELETE, "/buildings/").hasRole("MANAGER")
-                        .antMatchers(HttpMethod.GET, "/staffs").hasRole("MANAGER")
-                        .antMatchers(HttpMethod.POST, "/buildings/users").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.DELETE, "/buildings/", "/admin/account").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.GET, "/admin/staffs").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.POST, "/admin/assign-building", "/admin/account").hasRole("MANAGER")
+                        .antMatchers(HttpMethod.PUT, "/admin/account", "/admin/password").hasRole("MANAGER")
                         .anyRequest().denyAll())
                 .rememberMe(rm -> rm.rememberMeServices(
                         rememberMeServices()).key(rememberMeKey))

@@ -15,7 +15,6 @@ public interface BuildingService {
 
     public void updateBuilding(Long id, BuildingRequestAdd building);
 
-    // public void deleteBuilding(Long id);
     public void deleteByListId(Long[] ids);
 
     public Page<BuildingResponse> findByNameContaining(String s, Pageable pageable);

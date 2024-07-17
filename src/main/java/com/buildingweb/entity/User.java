@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -18,7 +20,7 @@ import lombok.Setter;
 @Table(name = "user")
 public class User extends BaseEntity {
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "password")
@@ -39,12 +41,15 @@ public class User extends BaseEntity {
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private List<Building> buildings = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", nullable = false), inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false))
     private List<Role> roles = new ArrayList<>();
+
+    // @ManyToMany(fetch = FetchType.LAZY)
 
     public Boolean isStaff() {
         for (Role role : roles) {
-            if (role.getCode().equals("STAFF")) {
+            if (role.getCode().toString().equals("STAFF")) {
                 return true;
             }
         }
@@ -53,7 +58,7 @@ public class User extends BaseEntity {
 
     public Boolean isManager() {
         for (Role role : roles) {
-            if (role.getCode().equals("MANAGER")) {
+            if (role.getCode().toString().equals("MANAGER")) {
                 return true;
             }
         }

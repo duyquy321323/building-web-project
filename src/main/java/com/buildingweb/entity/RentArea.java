@@ -19,11 +19,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "rentarea")
 public class RentArea extends BaseEntity {
 
-    @Column(name = "value")
+    @Column(name = "value", nullable = false)
     private Long value;
 
     @ManyToOne // EAGER
-    @JoinColumn(name = "buildingid")
+    @JoinColumn(name = "buildingid", nullable = false)
     private Building building;
 
     @Override

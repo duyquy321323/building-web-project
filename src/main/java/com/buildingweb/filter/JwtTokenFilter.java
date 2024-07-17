@@ -114,6 +114,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final List<Pair<String, String>> bypassTokens = Arrays.asList( // thêm các api và http method không cần xác thực
                                                                        // vào
                 Pair.of("/buildings/search", "POST"),
+                Pair.of("/buildings/", "GET"),
                 Pair.of("/login", "POST"),
                 Pair.of("/register", "POST"),
                 Pair.of("/logout", "POST"),

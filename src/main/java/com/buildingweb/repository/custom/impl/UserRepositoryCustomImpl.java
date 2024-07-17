@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.buildingweb.entity.Role;
 import com.buildingweb.entity.User;
+import com.buildingweb.enums.RoleConst;
 import com.buildingweb.repository.custom.UserRepositoryCustom;
 
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
@@ -25,7 +26,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Page<User> findAllByRoleAndStatus(String role, Integer status, Pageable pageable) {
+    public Page<User> findAllByRoleAndStatus(RoleConst role, Integer status, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy builder partern criteria
         CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class); // tạo criteria query cho đối tượng user
         Root<User> userRoot = query.from(User.class); // lập chủ sở hữu là User

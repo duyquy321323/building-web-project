@@ -1,8 +1,5 @@
 package com.buildingweb.enums;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 import lombok.Getter;
 
 @Getter
@@ -22,11 +19,11 @@ public enum District {
         this.districtName = districtName;
     }
 
-    public static Map<String, String> listDistrict() {
-        Map<String, String> districts = new TreeMap<>();
-        for (District it : District.values()) {
-            districts.put(it.toString(), it.districtName);
-        }
-        return districts;
-    }
+    // public static Map<String, String> listDistrict() {
+    // Map<String, String> districts = new TreeMap<>();
+    // for (District it : District.values()) {
+    // districts.put(it.toString(), it.districtName);
+    // }
+    // return districts;
+    // }
 }

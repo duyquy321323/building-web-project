@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.buildingweb.exception.custom.EntityNotFoundException;
 import com.buildingweb.exception.custom.NotAllowRoleException;
 import com.buildingweb.exception.custom.PasswordNotMatchException;
+import com.buildingweb.exception.custom.RequestNullException;
 import com.buildingweb.response.ExceptionResponse;
 
 @ControllerAdvice
@@ -68,6 +69,17 @@ public class HandlerException {
         exceptionResponse.setMessage(ex.getMessage());
         List<String> details = new ArrayList<>();
         details.add("Please check your request is not number");
+        exceptionResponse.setDetails(details);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(RequestNullException.class)
+    public ResponseEntity<?> throwRequestNull(RequestNullException ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST);
+        exceptionResponse.setMessage(ex.getMessage());
+        List<String> details = new ArrayList<>();
+        details.add("Please check your request is null");
         exceptionResponse.setDetails(details);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }

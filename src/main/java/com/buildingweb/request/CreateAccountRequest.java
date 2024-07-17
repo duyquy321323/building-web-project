@@ -1,19 +1,20 @@
 package com.buildingweb.request;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import com.buildingweb.enums.RoleConst;
 
 import lombok.Getter;
 
 @Getter
-public class RegisterRequest {
+public class CreateAccountRequest {
+    @NotNull(message = "role is not null")
+    private List<RoleConst> roles;
     @NotBlank(message = "username is not blank")
     private String username;
-    @NotBlank(message = "password id not blank")
-    private String password;
-    private String confirmPassword;
     @NotBlank(message = "fullname is not blank")
     private String fullname;
-    @NotBlank(message = "phone number is not blank")
-    private String phoneNumber;
-    private String email;
 }
