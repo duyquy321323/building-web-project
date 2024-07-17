@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.buildingweb.exception.custom.EntityNotFoundException;
-import com.buildingweb.exception.custom.NotStaffRoleException;
+import com.buildingweb.exception.custom.NotAllowRoleException;
 import com.buildingweb.exception.custom.PasswordNotMatchException;
 import com.buildingweb.response.ExceptionResponse;
 
@@ -36,13 +36,13 @@ public class HandlerException {
         List<String> details = new ArrayList<>();
         details.add("Data not found in entity. Check please");
         exceptionResponse.setDetails(details);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
     @ExceptionHandler(PasswordNotMatchException.class)
-    public ResponseEntity<?> throwEntityNotFound(PasswordNotMatchException ex) {
+    public ResponseEntity<?> throwPasswordNotMatch(PasswordNotMatchException ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setStatus(HttpStatus.NOT_FOUND);
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST);
         exceptionResponse.setMessage(ex.getMessage());
         List<String> details = new ArrayList<>();
         details.add("Please check your password");
@@ -50,13 +50,24 @@ public class HandlerException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @ExceptionHandler(NotStaffRoleException.class)
-    public ResponseEntity<?> throwNotStaffRole(NotStaffRoleException ex) {
+    @ExceptionHandler(NotAllowRoleException.class)
+    public ResponseEntity<?> throwNotAllowRole(NotAllowRoleException ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setStatus(HttpStatus.NOT_FOUND);
+        exceptionResponse.setStatus(HttpStatus.UNAUTHORIZED);
         exceptionResponse.setMessage(ex.getMessage());
         List<String> details = new ArrayList<>();
         details.add("Please check your request");
+        exceptionResponse.setDetails(details);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(NumberFormatException.class)
+    public ResponseEntity<?> throwNumberFormat(NumberFormatException ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST);
+        exceptionResponse.setMessage(ex.getMessage());
+        List<String> details = new ArrayList<>();
+        details.add("Please check your request is not number");
         exceptionResponse.setDetails(details);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }

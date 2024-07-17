@@ -23,15 +23,19 @@ import com.buildingweb.request.LoginRequest;
 import com.buildingweb.request.RegisterRequest;
 import com.buildingweb.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "User Controller", description = "Used for user operations and management.")
 public class UserController {
 
     private final UserService userService;
 
     // Login
+    @Operation(summary = "Login", description = "Sign in your account.")
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request,
             BindingResult result, HttpServletRequest request2, HttpServletResponse response) {
@@ -44,6 +48,7 @@ public class UserController {
     }
 
     // Register
+    @Operation(summary = "Register", description = "Sign up your new account.")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request, BindingResult result) {
         if (result.hasErrors()) {
@@ -57,6 +62,7 @@ public class UserController {
 
     // Lấy các thông tin nhân viên ra
     @GetMapping("/staffs")
+    @Operation(summary = "Get all staff", description = "Get all staff status 1 in database now.")
     public ResponseEntity<?> getAllStaff(@RequestParam(required = false, defaultValue = "0") Integer pageNo,
             @RequestParam(required = false, defaultValue = "2") Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
@@ -65,6 +71,7 @@ public class UserController {
 
     // Giao tòa nhà cho nhân viên quản lý
     @PostMapping("/buildings/users")
+    @Operation(summary = "Building transaction", description = "Transaction the building for staff.")
     public ResponseEntity<?> deliverTheBuilding(@RequestParam List<Long> id, @RequestParam Long buildingId) {
         userService.deliverTheBuilding(id, buildingId);
         return ResponseEntity.ok().build();

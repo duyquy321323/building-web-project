@@ -21,7 +21,7 @@ import com.buildingweb.converter.UserConverter;
 import com.buildingweb.entity.Building;
 import com.buildingweb.entity.User;
 import com.buildingweb.exception.custom.EntityAlreadyExistedException;
-import com.buildingweb.exception.custom.NotStaffRoleException;
+import com.buildingweb.exception.custom.NotAllowRoleException;
 import com.buildingweb.exception.custom.PasswordNotMatchException;
 import com.buildingweb.model.UserDTO;
 import com.buildingweb.repository.BuildingRepository;
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public void register(RegisterRequest request) {
-        if (request.getPassword().equals(request.getComfirmPassword()) == false) {
+        if (request.getPassword().equals(request.getConfirmPassword()) == false) {
             throw new PasswordNotMatchException("Confirm password is not match!");
         }
         User user = userRepository.findByUsername(request.getUsername());
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
         for (Long userId : id) {
             if (!userRepository.findById(userId).get().isStaff()) {
-                throw new NotStaffRoleException();
+                throw new NotAllowRoleException();
             }
         }
 

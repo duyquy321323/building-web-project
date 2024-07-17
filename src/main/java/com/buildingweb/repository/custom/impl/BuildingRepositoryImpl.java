@@ -83,9 +83,9 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         if (UtilFunction.checkString(buildingRequest.getManagerName())) {
             predicates.add(criteriaBuilder.like(root.get("managerName"), "%" + buildingRequest.getManagerName() + "%"));
         }
-        if (UtilFunction.checkString(buildingRequest.getManagerPhonenumber())) {
+        if (UtilFunction.checkString(buildingRequest.getManagerPhoneNumber())) {
             predicates.add(
-                    criteriaBuilder.equal(root.get("managerPhonenumber"), buildingRequest.getManagerPhonenumber()));
+                    criteriaBuilder.equal(root.get("managerPhoneNumber"), buildingRequest.getManagerPhoneNumber()));
         }
 
         Join<Building, User> userJoin = root.join("users", JoinType.LEFT); // lấy tất cả các bản ghi root kể cả không có

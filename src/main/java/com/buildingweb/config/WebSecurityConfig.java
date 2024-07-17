@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -84,14 +85,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeRequests(requests -> requests
-                        .antMatchers(HttpMethod.POST, "/login", "/register", "/logout").permitAll()
-                        .antMatchers(HttpMethod.GET, "/buildings/", "/swagger-ui/**", "/swagger-config.js",
-                                "/v3/api-docs/**", "/v3/api-docs")
+                        .antMatchers(HttpMethod.POST, "/login", "/register", "/logout",
+                                "/buildings/search")
                         .permitAll()
-                        .antMatchers(HttpMethod.POST, "/buildings/").hasAnyRole("MANAGER", "STAFF")
+                        .antMatchers(HttpMethod.GET, "/swagger-ui/**",
+                                "/v3/api-docs/**", "/v3/api-docs", "/API license URL")
+                        .permitAll()
+                        .antMatchers(HttpMethod.POST, "/buildings/new").hasAnyRole("MANAGER", "STAFF")
                         .antMatchers(HttpMethod.PUT, "/buildings/").hasAnyRole("MANAGER", "STAFF")
                         .antMatchers(HttpMethod.DELETE, "/buildings/").hasRole("MANAGER")
                         .antMatchers(HttpMethod.GET, "/staffs").hasRole("MANAGER")
@@ -101,7 +104,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         rememberMeServices()).key(rememberMeKey))
                 .addFilterBefore(jwtTokenFilter(),
                         UsernamePasswordAuthenticationFilter.class)
-                .logout(lo -> lo.deleteCookies("JSESSIONID", "remember-me").permitAll());
+                .logout(logout -> logout.deleteCookies("JSESSIONID", "remember-me").permitAll());
     }
 
 }

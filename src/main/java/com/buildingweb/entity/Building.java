@@ -68,8 +68,8 @@ public class Building extends BaseEntity {
     @Column(name = "carfee")
     private String carFee;
 
-    @Column(name = "motofee")
-    private String motoFee;
+    @Column(name = "motorfee")
+    private String motorFee;
 
     @Column(name = "overtimefee")
     private String overtimeFee;
@@ -90,7 +90,7 @@ public class Building extends BaseEntity {
     private String rentTime;
 
     @Column(name = "decorationtime")
-    private String descorationTime;
+    private String decorationTime;
 
     @Column(name = "brokeragefee", precision = 13, scale = 2)
     private BigDecimal brokerageFee;
@@ -105,10 +105,10 @@ public class Building extends BaseEntity {
     private String managerName;
 
     @Column(name = "managerphone")
-    private String managerPhonenumber;
+    private String managerPhoneNumber;
 
     @Lob
-    @Column(name = "linkofbuilding")
+    @Column(name = "linkofbuilding", columnDefinition = "LONGBLOB")
     private byte[] linkOfBuilding;
 
     @OneToMany(cascade = { CascadeType.PERSIST,

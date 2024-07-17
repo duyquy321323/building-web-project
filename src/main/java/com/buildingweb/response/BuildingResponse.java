@@ -12,7 +12,7 @@ public class BuildingResponse {
     private String address;
     private Long numberOfBasement;
     private String managerName;
-    private String managerPhonenumber;
+    private String managerPhoneNumber;
     private Long floorArea;
     private Long emptySpace;
     private String leasedArea;

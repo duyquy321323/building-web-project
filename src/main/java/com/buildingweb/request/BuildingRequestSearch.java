@@ -23,7 +23,7 @@ public class BuildingRequestSearch {
     private Long rentPriceFrom;
     private Long rentPriceTo;
     private String managerName;
-    private String managerPhonenumber;
+    private String managerPhoneNumber;
     private UserDTO user;
     private List<RentType> rentTypes;
 }
