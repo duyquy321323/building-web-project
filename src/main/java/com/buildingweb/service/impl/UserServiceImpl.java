@@ -1,5 +1,6 @@
 package com.buildingweb.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,16 +23,17 @@ import org.springframework.stereotype.Service;
 
 import com.buildingweb.converter.UserConverter;
 import com.buildingweb.entity.Building;
+import com.buildingweb.entity.Customer;
 import com.buildingweb.entity.Role;
 import com.buildingweb.entity.User;
 import com.buildingweb.enums.RoleConst;
 import com.buildingweb.exception.custom.EntityAlreadyExistedException;
 import com.buildingweb.exception.custom.EntityNotFoundException;
-import com.buildingweb.exception.custom.NotAllowRoleException;
 import com.buildingweb.exception.custom.PasswordNotMatchException;
 import com.buildingweb.exception.custom.RequestNullException;
 import com.buildingweb.model.UserDTO;
 import com.buildingweb.repository.BuildingRepository;
+import com.buildingweb.repository.CustomerRepository;
 import com.buildingweb.repository.RoleRepository;
 import com.buildingweb.repository.UserRepository;
 import com.buildingweb.request.CreateAccountRequest;
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RememberMeServices rememberMeServices;
     private final BuildingRepository buildingRepository;
+    private final CustomerRepository customerRepository;
     private final RoleRepository roleRepository;
 
     @Value("${admin.account.password}")
@@ -124,23 +127,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deliverTheBuilding(List<Long> id, Long buildingId) {
 
-        if (buildingId != null && id != null) {
-            for (Long userId : id) {
-                if (!userRepository.findById(userId).get().isStaff()) {
-                    throw new NotAllowRoleException();
-                }
-            }
+        if (buildingId != null && id != null && !id.isEmpty()) {
             Building building = buildingRepository.findById(buildingId).get();
-            if (building == null)
-                return;
-            List<User> users = userRepository.findByIdInAndStatus(id, 1);
-            if (users != null) {
-                building.setUsers(users);
+            if (building != null) {
+                List<User> users = userRepository.findByIdInAndStatus(id, 1);
+                List<User> staffs = new ArrayList<>();
+                for (User user : users) {
+                    if (user.isStaff()) {
+                        staffs.add(user);
+                    }
+                }
+                building.setUsers(staffs);
                 buildingRepository.save(building);
+                return;
             }
-            return;
+            throw new EntityNotFoundException("This building is not found");
         }
-        throw new EntityNotFoundException("This building is not found or user request is null!");
+        throw new RequestNullException();
     }
 
     @Override
@@ -196,6 +199,27 @@ public class UserServiceImpl implements UserService {
                 return;
             }
             throw new EntityNotFoundException("Account is not found");
+        }
+        throw new RequestNullException();
+    }
+
+    @Override
+    public void deliverTheCustomer(Long idCustomer, List<Long> idStaff) {
+        if (idCustomer != null && idStaff != null && !idStaff.isEmpty()) {
+            Customer customer = customerRepository.findByIdAndIsActive(idCustomer, 1);
+            if (customer != null) {
+                List<User> users = userRepository.findByIdInAndStatus(idStaff, 1);
+                List<User> staffs = new ArrayList<>();
+                for (User user : users) {
+                    if (user.isStaff()) {
+                        staffs.add(user);
+                    }
+                }
+                customer.setUsers(staffs);
+                customerRepository.save(customer);
+                return;
+            }
+            throw new EntityNotFoundException("Customer is not found");
         }
         throw new RequestNullException();
     }

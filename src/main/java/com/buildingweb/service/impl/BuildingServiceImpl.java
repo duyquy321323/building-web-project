@@ -5,8 +5,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -41,14 +39,8 @@ public class BuildingServiceImpl implements BuildingService {
             Pageable pageable) {
         if (buildingRequest != null) {
             if (buildingRequest.getUserId() != null) {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (authentication == null || !authentication.isAuthenticated()
-                        || authentication instanceof AnonymousAuthenticationToken) { // kiểm tra xem đã được xác thực
-                                                                                     // hay
-                                                                                     // chưa
-                    throw new NotAllowRoleException("You must authentication");
-                }
-                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                        .getPrincipal();
                 if (!userRepository.findByUsernameAndStatus(userDetails.getUsername(), 1).isManager()) {
                     throw new NotAllowRoleException("You mustn't manager role");
                 }
@@ -75,8 +67,9 @@ public class BuildingServiceImpl implements BuildingService {
     public void updateBuilding(Long id, BuildingRequestAdd building) {
         if (id != null && building != null) {
             if (buildingRepository.existsById(id)) {
-                Building newBuilding = buildingConverter.buildingRequestAddToBuildingExisted(id, building);
-                buildingRepository.save(newBuilding);
+                Building bui = buildingRepository.findById(id).get();
+                buildingConverter.buildingRequestAddToBuildingExisted(building, bui);
+                buildingRepository.save(bui);
             } else
                 throw new EntityNotFoundException("Building is not found");
             return;

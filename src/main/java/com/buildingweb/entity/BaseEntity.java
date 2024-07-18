@@ -41,5 +41,5 @@ public class BaseEntity {
 
     @Column(name = "modifiedby")
     @LastModifiedBy // sửa bởi ai
-    private String modifiiedBy;
+    private String modifiedBy;
 }

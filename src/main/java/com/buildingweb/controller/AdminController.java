@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.buildingweb.enums.RoleConst;
 import com.buildingweb.request.CreateAccountRequest;
+import com.buildingweb.request.CustomerRequest;
+import com.buildingweb.service.CustomerService;
 import com.buildingweb.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
+    private final CustomerService customerService;
 
     // Lấy các thông tin nhân viên ra
     @GetMapping("/staffs")
@@ -83,9 +86,29 @@ public class AdminController {
     }
 
     @PutMapping("/password")
-    @Operation(summary = "Reset Password", description = "admin can be reset password for account")
+    @Operation(summary = "Reset Password", description = "Admin can be reset password for account")
     public ResponseEntity<?> resetPassword(@RequestParam String username) {
         userService.resetPassword(username);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/customer")
+    @Operation(summary = "Add New Customer", description = "Admin can be add new customer")
+    public ResponseEntity<?> addNewCustomer(@Valid @RequestBody CustomerRequest request, String status,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
+                    .collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
+        }
+        customerService.addNewCustomer(request, status);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/assign-customer")
+    @Operation(summary = "Assignment Customer", description = "Admin assignment customer for staff.")
+    public ResponseEntity<?> assignCustomer(@RequestParam Long idCustomer, @RequestParam List<Long> idStaff) {
+        userService.deliverTheCustomer(idCustomer, idStaff);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

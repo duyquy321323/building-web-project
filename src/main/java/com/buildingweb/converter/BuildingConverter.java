@@ -2,6 +2,7 @@ package com.buildingweb.converter;
 
 import java.util.stream.Collectors;
 
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,9 +53,9 @@ public class BuildingConverter {
         return building;
     }
 
-    public Building buildingRequestAddToBuildingExisted(Long id, BuildingRequestAdd buildingRequestAdd) {
-        Building building = modelMapper.map(buildingRequestAdd, Building.class);
-        building.setId(id);
-        return building;
+    public void buildingRequestAddToBuildingExisted(BuildingRequestAdd buildingRequestAdd, Building building) {
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.map(buildingRequestAdd, building);
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
     }
 }

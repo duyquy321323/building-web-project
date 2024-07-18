@@ -30,4 +30,6 @@ public interface UserService {
     public void editAccount(String username, List<RoleConst> roles, String fullname);
 
     public void resetPassword(String username);
+
+    public void deliverTheCustomer(Long idCustomer, List<Long> idStaff);
 }
