@@ -36,46 +36,38 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserRepository userRepository;
 
     public void requestContact(CustomerRequest request) {
-        if (request != null) {
-            Customer customer = customerConverter.customerRequestToCustomer(request);
-            customerRepository.save(customer);
-            return;
-        }
-        throw new RequestNullException();
+        Customer customer = customerConverter.customerRequestToCustomer(request);
+        customerRepository.save(customer);
     };
 
     @Override
     public Page<CustomerSearchResponse> searchCustomer(CustomerSearchRequest request, Pageable pageable) {
-        if (request != null) {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal();
-            User user = userRepository.findByUsernameAndStatus(userDetails.getUsername(), 1);
-            if (request.getStaffId() != null) {
-                if (user == null || !user.isManager()) {
-                    throw new NotAllowRoleException("you mustn't manager role.");
-                }
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        User user = userRepository.findByUsernameAndStatus(userDetails.getUsername(), 1);
+        if (request.getStaffId() != null) {
+            if (user == null || !user.isManager()) {
+                throw new NotAllowRoleException("you mustn't manager role.");
             }
-            if (user.isManager()) {
-                user = null;
-            }
-            Page<Customer> customers = customerRepository.findByCustomerSearchRequestAndUser(request, user, pageable);
-            if (customers != null)
-                return customers.map((it) -> customerConverter.customerToCustomerSearchResponse(it));
         }
-        throw new RequestNullException();
+        if (user.isManager()) {
+            user = null;
+        }
+        Page<Customer> customers = customerRepository.findByCustomerSearchRequestAndUser(request, user, pageable);
+        if (customers != null)
+            return customers.map((it) -> customerConverter.customerToCustomerSearchResponse(it));
+        throw new EntityNotFoundException("customer is not found");
     }
 
     @Override
     public void deleteCustomers(List<Long> id) {
-        if (id != null) {
-            List<Customer> customers = customerRepository.findByIdInAndIsActive(id, 1);
-            for (Customer customer : customers) {
-                customer.setIsActive(0);
-            }
-            customerRepository.saveAll(customers);
-            return;
+        List<Customer> customers = customerRepository.findByIdInAndIsActive(id, 1);
+        if (customers == null || customers.isEmpty())
+            throw new EntityNotFoundException("Customer not found");
+        for (Customer customer : customers) {
+            customer.setIsActive(0);
         }
-        throw new RequestNullException();
+        customerRepository.saveAll(customers);
     }
 
     @Override
@@ -93,12 +85,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void addNewCustomer(CustomerRequest request, String status) {
-        if (request != null) {
-            Customer customer = customerConverter.customerRequestToCustomer(request);
-            customer.setStatus(status);
-            customerRepository.save(customer);
-            return;
-        }
-        throw new RequestNullException();
+        Customer customer = customerConverter.customerRequestToCustomer(request);
+        customer.setStatus(status);
+        customerRepository.save(customer);
     }
 }

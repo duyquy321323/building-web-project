@@ -1,5 +1,6 @@
 package com.buildingweb.converter;
 
+import org.modelmapper.Condition;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class CustomerConverter {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    Condition<?, ?> skipNullAndBlank;
+
     public Customer customerRequestToCustomer(CustomerRequest request) {
         Customer customer = modelMapper.map(request, Customer.class);
         customer.setIsActive(1);
@@ -26,7 +30,7 @@ public class CustomerConverter {
     }
 
     public void editCustomerRequestToCustomer(EditCustomerRequest request, Customer cus) {
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.getConfiguration().setPropertyCondition(skipNullAndBlank);
         modelMapper.map(request, cus);
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
     }

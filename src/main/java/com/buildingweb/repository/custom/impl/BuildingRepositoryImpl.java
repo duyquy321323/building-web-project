@@ -1,5 +1,6 @@
 package com.buildingweb.repository.custom.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +25,15 @@ import com.buildingweb.repository.custom.BuildingRepositoryCustom;
 import com.buildingweb.request.BuildingRequestSearch;
 import com.buildingweb.utils.UtilFunction;
 
+import lombok.SneakyThrows;
+
 public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 
     @PersistenceContext // inject đối tượng EntityManager vào do spring boot quản lý vòng đời của nó
     private EntityManager entityManager;
 
     @Override
+    @SneakyThrows
     public Page<Building> findByBuildingRequestSearch(BuildingRequestSearch buildingRequest, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy đối tượng CriteriaBuilder từ
                                                                               // EntityManager
@@ -43,9 +47,8 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         if (UtilFunction.checkLong(buildingRequest.getFloorArea())) {
             predicates.add(criteriaBuilder.equal(root.get("floorArea"), buildingRequest.getFloorArea()));
         }
-        if (buildingRequest.getDistrict() != null
-                && UtilFunction.checkString(buildingRequest.getDistrict().toString())) {
-            predicates.add(criteriaBuilder.equal(root.get("district"), buildingRequest.getDistrict().toString()));
+        if (buildingRequest.getDistrict() != null) {
+            predicates.add(criteriaBuilder.equal(root.get("district"), buildingRequest.getDistrict()));
         }
         if (UtilFunction.checkString(buildingRequest.getWard())) {
             predicates.add(criteriaBuilder.like(root.get("ward"), "%" + buildingRequest.getWard() + "%"));
@@ -67,11 +70,13 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         Join<Building, RentArea> joinBuildRentArea = root.join("rentAreas", JoinType.LEFT);
         if (UtilFunction.checkLong(buildingRequest.getAreaFrom())) {
             predicates.add(
-                    criteriaBuilder.greaterThanOrEqualTo(joinBuildRentArea.get("area"), buildingRequest.getAreaFrom()));
+                    criteriaBuilder.greaterThanOrEqualTo(joinBuildRentArea.get("value"),
+                            buildingRequest.getAreaFrom()));
         }
         if (UtilFunction.checkLong(buildingRequest.getAreaTo())) {
             predicates
-                    .add(criteriaBuilder.lessThanOrEqualTo(joinBuildRentArea.get("area"), buildingRequest.getAreaTo()));
+                    .add(criteriaBuilder.lessThanOrEqualTo(joinBuildRentArea.get("value"),
+                            buildingRequest.getAreaTo()));
         }
         if (UtilFunction.checkLong(buildingRequest.getRentPriceFrom())) {
             predicates.add(
@@ -97,7 +102,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         if (buildingRequest.getRentTypes() != null && !buildingRequest.getRentTypes().isEmpty()) {
             List<Predicate> rentTypePredicate = new ArrayList<>();
             for (RentType rentType : buildingRequest.getRentTypes()) {
-                rentTypePredicate.add(criteriaBuilder.like(root.get("type"), "%" + rentType.toString() + "% "));
+                rentTypePredicate.add(criteriaBuilder.like(root.get("rentTypes"), "%" + rentType.toString() + "%"));
             }
             predicates.add(criteriaBuilder.or(rentTypePredicate.toArray(new Predicate[0])));
         }
@@ -106,7 +111,12 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
             query.where(finalPredicate);
         }
         query.select(root).distinct(true);
-        List<Building> buildings = entityManager.createQuery(query).getResultList();
+        List<Building> buildings = new ArrayList<>();
+        try {
+            buildings = entityManager.createQuery(query).getResultList();
+        } catch (Exception e) {
+            throw new SQLException("Error: " + e.getMessage());
+        }
         return new PageImpl<>(buildings, pageable, buildings.size());
     }
 }

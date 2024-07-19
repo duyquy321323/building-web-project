@@ -19,7 +19,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.SneakyThrows;
 
 @SuppressWarnings("deprecation")
 @Service
@@ -32,11 +31,10 @@ public class JwtServiceImpl implements JwtService {
     private String secret;
 
     @Override
-    @SneakyThrows
     public String generateToken(User user) {
         // properties -> claims
         Map<String, Object> claims = new HashMap<>(); // tạo các claim
-        claims.put("username", user.getUsername()); // đẩy claim username vào
+        claims.put("username", user.getUsername()); // đẩy claim username vào tức là dữ liệu muốn truyền thông qua token
         try {
             String token = Jwts.builder().setClaims(claims) // set claim của payload
                     .setSubject(user.getUsername()) // đặt sub là định danh

@@ -1,5 +1,6 @@
 package com.buildingweb.repository.custom.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +23,14 @@ import com.buildingweb.repository.custom.CustomerRepositoryCustom;
 import com.buildingweb.request.CustomerSearchRequest;
 import com.buildingweb.utils.UtilFunction;
 
+import lombok.SneakyThrows;
+
 public class CustomerRepositoryCustomImpl implements CustomerRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
+    @SneakyThrows
     public Page<Customer> findByCustomerSearchRequestAndUser(CustomerSearchRequest request, User user,
             Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -55,11 +59,17 @@ public class CustomerRepositoryCustomImpl implements CustomerRepositoryCustom {
         predicates.add(criteriaBuilder.equal(rootCustomer.get("isActive"), 1));
         Predicate finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         customerQuery.select(rootCustomer).distinct(true).where(finalPredicate);
-        List<Customer> customers = entityManager.createQuery(customerQuery).getResultList();
+        List<Customer> customers = new ArrayList<>();
+        try {
+            customers = entityManager.createQuery(customerQuery).getResultList();
+        } catch (Exception e) {
+            throw new SQLException("Error: " + e.getMessage());
+        }
         return new PageImpl<>(customers, pageable, customers.size());
     }
 
     @Override
+    @SneakyThrows
     public List<Customer> findAllByUserAndIsActive(User user, Integer isActive) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Customer> queryCustomer = criteriaBuilder.createQuery(Customer.class);
@@ -75,6 +85,37 @@ public class CustomerRepositoryCustomImpl implements CustomerRepositoryCustom {
         predicates.add(criteriaBuilder.equal(joinUser.get("status"), 1));
         queryCustomer.select(rootCustomer).distinct(true)
                 .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-        return entityManager.createQuery(queryCustomer).getResultList();
+        try {
+            return entityManager.createQuery(queryCustomer).getResultList();
+        } catch (Exception e) {
+            throw new SQLException("Error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public Customer findByIdAndIsActiveAndStaff(Long id, Integer isActive, User user) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Customer> customerQuery = criteriaBuilder.createQuery(Customer.class);
+        Root<Customer> rootCustomer = customerQuery.from(Customer.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (UtilFunction.checkLong(id)) {
+            predicates.add(criteriaBuilder.equal(rootCustomer.get("id"), id));
+        }
+        if (isActive != null) {
+            predicates.add(criteriaBuilder.equal(rootCustomer.get("isActive"), isActive));
+        }
+
+        Join<Customer, User> joinUser = rootCustomer.join("users", JoinType.LEFT);
+        if (user != null) {
+            predicates.add(criteriaBuilder.equal(joinUser.get("id"), user.getId()));
+        }
+        customerQuery.select(rootCustomer).distinct(true).where(predicates.toArray(new Predicate[0]));
+        try {
+            return entityManager.createQuery(customerQuery).getSingleResult();
+        } catch (Exception e) {
+            throw new SQLException("Error: " + e.getMessage());
+        }
     }
 }

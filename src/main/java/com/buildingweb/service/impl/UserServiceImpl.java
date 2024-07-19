@@ -43,7 +43,6 @@ import com.buildingweb.service.JwtService;
 import com.buildingweb.service.UserService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 
 @RequiredArgsConstructor
 @Service
@@ -65,7 +64,6 @@ public class UserServiceImpl implements UserService {
     private String passwordLocal;
 
     @Override
-    @SneakyThrows
     public UserDTO login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response) {
         if (request != null) {
             User user = userRepository.findByUsernameAndStatus(request.getUsername(), 1);
@@ -88,8 +86,10 @@ public class UserServiceImpl implements UserService {
                                                                                                         // đối tượng
                                                                                                         // quản lý
                                                                                                         // xác
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                rememberMeServices.loginSuccess(request2, response, authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication); // cho người dùng vào ngữ cảnh bảo
+                                                                                      // mật hiện tại để từ các api khác
+                                                                                      // có thể truy cập vào
+                rememberMeServices.loginSuccess(request2, response, authentication); // nếu có remember me
                 String token = jwtService.generateToken(user); // tạo token cho user
                 UserDTO userDTO = userConverter.toUserDTO(user);
                 userDTO.setToken(token);
@@ -101,7 +101,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @SneakyThrows
     public void register(RegisterRequest request) {
         if (request != null) {
             if (request.getPassword().equals(request.getConfirmPassword()) == false) {
@@ -127,100 +126,84 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deliverTheBuilding(List<Long> id, Long buildingId) {
 
-        if (buildingId != null && id != null && !id.isEmpty()) {
-            Building building = buildingRepository.findById(buildingId).get();
-            if (building != null) {
-                List<User> users = userRepository.findByIdInAndStatus(id, 1);
-                List<User> staffs = new ArrayList<>();
-                for (User user : users) {
-                    if (user.isStaff()) {
-                        staffs.add(user);
-                    }
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new EntityNotFoundException("Building is not found"));
+        if (building != null) {
+            List<User> users = userRepository.findByIdInAndStatus(id, 1);
+            List<User> staffs = new ArrayList<>();
+            for (User user : users) {
+                if (user.isStaff()) {
+                    staffs.add(user);
                 }
-                building.setUsers(staffs);
-                buildingRepository.save(building);
-                return;
             }
-            throw new EntityNotFoundException("This building is not found");
+            if (staffs == null || staffs.isEmpty())
+                throw new EntityNotFoundException("Staff is not found");
+            building.setUsers(staffs);
+            buildingRepository.save(building);
+            return;
         }
-        throw new RequestNullException();
+        throw new EntityNotFoundException("This building is not found");
     }
 
     @Override
     public void createAccount(CreateAccountRequest request) {
-        if (request != null) {
-            User user = userConverter.createAccountToUser(request);
-            userRepository.save(user);
-            return;
-        }
-        throw new RequestNullException();
+        User user = userConverter.createAccountToUser(request);
+        userRepository.save(user);
     }
 
     @Override
     public void deleteAccount(List<Long> id) {
-        if (id != null) {
-            List<User> users = userRepository.findByIdInAndStatus(id, 1);
-            if (users != null) {
-                for (User user : users) {
-                    user.setStatus(0);
-                }
-                userRepository.saveAll(users);
-                return;
+        List<User> users = userRepository.findByIdInAndStatus(id, 1);
+        if (users != null && !users.isEmpty()) {
+            for (User user : users) {
+                user.setStatus(0);
             }
-            throw new EntityNotFoundException();
+            userRepository.saveAll(users);
+            return;
         }
-        throw new RequestNullException();
+        throw new EntityNotFoundException("User not found");
     }
 
     @Override
     public void editAccount(String username, List<RoleConst> roles, String fullname) {
-        if (username != null && roles != null && fullname != null) {
-            User user = userRepository.findByUsernameAndStatus(username, 1);
-            if (user != null) {
-                List<Role> roles2 = roles.stream().map(it -> roleRepository.findByCode(it))
-                        .collect(Collectors.toList());
-                user.setRoles(roles2);
-                user.setFullname(fullname);
-                userRepository.save(user);
-                return;
-            }
-            throw new EntityNotFoundException("Account is not found");
+        User user = userRepository.findByUsernameAndStatus(username, 1);
+        if (user != null) {
+            List<Role> roles2 = roles.stream().map(it -> roleRepository.findByCode(it))
+                    .collect(Collectors.toList());
+            user.setRoles(roles2);
+            user.setFullname(fullname);
+            userRepository.save(user);
+            return;
         }
-        throw new RequestNullException();
+        throw new EntityNotFoundException("Account is not found");
     }
 
     @Override
     public void resetPassword(String username) {
-        if (username != null) {
-            User user = userRepository.findByUsernameAndStatus(username, 1);
-            if (user != null) {
-                user.setPassword(passwordEncoder.encode(passwordLocal));
-                userRepository.save(user);
-                return;
-            }
-            throw new EntityNotFoundException("Account is not found");
+        User user = userRepository.findByUsernameAndStatus(username, 1);
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(passwordLocal));
+            userRepository.save(user);
+            return;
         }
-        throw new RequestNullException();
+        throw new EntityNotFoundException("Account is not found");
     }
 
     @Override
     public void deliverTheCustomer(Long idCustomer, List<Long> idStaff) {
-        if (idCustomer != null && idStaff != null && !idStaff.isEmpty()) {
-            Customer customer = customerRepository.findByIdAndIsActive(idCustomer, 1);
-            if (customer != null) {
-                List<User> users = userRepository.findByIdInAndStatus(idStaff, 1);
-                List<User> staffs = new ArrayList<>();
-                for (User user : users) {
-                    if (user.isStaff()) {
-                        staffs.add(user);
-                    }
+        Customer customer = customerRepository.findByIdAndIsActive(idCustomer, 1);
+        if (customer != null) {
+            List<User> users = userRepository.findByIdInAndStatus(idStaff, 1);
+            List<User> staffs = new ArrayList<>();
+            for (User user : users) {
+                if (user.isStaff()) {
+                    staffs.add(user);
                 }
-                customer.setUsers(staffs);
-                customerRepository.save(customer);
-                return;
             }
-            throw new EntityNotFoundException("Customer is not found");
+            customer.setUsers(staffs);
+            customerRepository.save(customer);
+            return;
         }
-        throw new RequestNullException();
+        throw new EntityNotFoundException("Customer is not found");
     }
 }

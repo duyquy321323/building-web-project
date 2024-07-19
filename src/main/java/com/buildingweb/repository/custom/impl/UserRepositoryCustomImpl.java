@@ -1,5 +1,6 @@
 package com.buildingweb.repository.custom.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +22,14 @@ import com.buildingweb.entity.User;
 import com.buildingweb.enums.RoleConst;
 import com.buildingweb.repository.custom.UserRepositoryCustom;
 
+import lombok.SneakyThrows;
+
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
+    @SneakyThrows
     public Page<User> findAllByRoleAndStatus(RoleConst role, Integer status, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy builder partern criteria
         CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class); // tạo criteria query cho đối tượng user
@@ -36,7 +40,12 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         predicates.add(criteriaBuilder.equal(roleJoin.get("code"), role));
         predicates.add(criteriaBuilder.equal(userRoot.get("status"), status));
         query.select(userRoot).distinct(true).where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-        List<User> users = entityManager.createQuery(query).getResultList();
+        List<User> users = new ArrayList<>();
+        try {
+            users = entityManager.createQuery(query).getResultList();
+        } catch (Exception e) {
+            throw new SQLException("Error: " + e.getMessage());
+        }
         return new PageImpl<>(users, pageable, users.size());
     }
 }

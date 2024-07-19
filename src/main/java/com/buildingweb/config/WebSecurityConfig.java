@@ -88,24 +88,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeRequests(requests -> requests
+                        // pemitAll
                         .antMatchers(HttpMethod.POST, "/login", "/register", "/logout",
                                 "/buildings/search", "/customer/contact")
                         .permitAll()
-                        .antMatchers(HttpMethod.GET, "/buildings/", "/swagger-ui/**",
+                        .antMatchers(HttpMethod.GET, "/buildings/**", "/swagger-ui/**",
                                 "/v3/api-docs/**", "/v3/api-docs", "/API license URL")
                         .permitAll()
-                        .antMatchers(HttpMethod.POST, "/buildings/new", "/customer/").hasAnyRole("MANAGER", "STAFF")
+                        // manager or staff
+                        .antMatchers(HttpMethod.POST, "/customer/", "/transaction/").hasAnyRole("MANAGER", "STAFF")
                         .antMatchers(HttpMethod.GET, "/transaction/").hasAnyRole("MANAGER", "STAFF")
-                        .antMatchers(HttpMethod.POST, "/transaction/").hasAnyRole("MANAGER", "STAFF")
-                        .antMatchers(HttpMethod.PUT, "/buildings/", "/customer/", "/transaction/")
+                        .antMatchers(HttpMethod.PUT, "/customer/", "/transaction/")
                         .hasAnyRole("MANAGER", "STAFF")
-                        .antMatchers(HttpMethod.DELETE, "/buildings/", "/admin/account", "/customer/")
+                        // only manager
+                        .antMatchers(HttpMethod.DELETE, "/buildings/**", "/admin/account", "/customer/")
                         .hasRole("MANAGER")
                         .antMatchers(HttpMethod.GET, "/admin/staffs").hasRole("MANAGER")
-                        .antMatchers(HttpMethod.POST, "/admin/assign-building", "/admin/account", "/admin/customer")
+                        .antMatchers(HttpMethod.POST,
+                                "/buildings/new", "/admin/assign-building", "/admin/account", "/admin/customer")
                         .hasRole("MANAGER")
-                        .antMatchers(HttpMethod.PUT, "/admin/account", "/admin/password", "/admin/assign-customer")
+                        .antMatchers(HttpMethod.PUT, "/buildings/", "/admin/account", "/admin/password",
+                                "/admin/assign-customer")
                         .hasRole("MANAGER")
+                        // deny
                         .anyRequest().denyAll())
                 .rememberMe(rm -> rm.rememberMeServices(
                         rememberMeServices()).key(rememberMeKey))

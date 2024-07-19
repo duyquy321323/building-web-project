@@ -94,8 +94,8 @@ public class AdminController {
 
     @PostMapping("/customer")
     @Operation(summary = "Add New Customer", description = "Admin can be add new customer")
-    public ResponseEntity<?> addNewCustomer(@Valid @RequestBody CustomerRequest request, String status,
-            BindingResult result) {
+    public ResponseEntity<?> addNewCustomer(@Valid @RequestBody CustomerRequest request,
+            BindingResult result, String status) {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
                     .collect(Collectors.toList());

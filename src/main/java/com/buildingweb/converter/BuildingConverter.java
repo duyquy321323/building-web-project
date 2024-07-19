@@ -2,6 +2,7 @@ package com.buildingweb.converter;
 
 import java.util.stream.Collectors;
 
+import org.modelmapper.Condition;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import lombok.SneakyThrows;
 public class BuildingConverter {
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private Condition<?, ?> skipNullAndBlank;
 
     public BuildingResponse toBuildingResponse(Building building) {
         StringBuilder address = new StringBuilder();
@@ -53,9 +57,22 @@ public class BuildingConverter {
         return building;
     }
 
+    @SneakyThrows
     public void buildingRequestAddToBuildingExisted(BuildingRequestAdd buildingRequestAdd, Building building) {
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        modelMapper.getConfiguration().setPropertyCondition(skipNullAndBlank);
         modelMapper.map(buildingRequestAdd, building);
+        if (buildingRequestAdd.getRentTypes() != null && !buildingRequestAdd.getRentTypes().isEmpty()) {
+            building.setRentTypes(buildingRequestAdd.getRentTypes().stream().map(it -> it.toString())
+                    .collect(Collectors.joining(",")));
+        }
+        if (buildingRequestAdd.getRentArea() != null && !buildingRequestAdd.getRentArea().isBlank()) {
+            building.getRentAreas().clear();
+            building.getRentAreas().addAll(UtilFunction.stringToListNumber(buildingRequestAdd.getRentArea()).stream()
+                    .map(it -> RentArea.builder().value(it).building(building).build()).collect(Collectors.toList()));
+        }
+        if (buildingRequestAdd.getLinkOfBuilding() != null && !buildingRequestAdd.getLinkOfBuilding().isEmpty()) {
+            building.setLinkOfBuilding(buildingRequestAdd.getLinkOfBuilding().getBytes());
+        }
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
     }
 }

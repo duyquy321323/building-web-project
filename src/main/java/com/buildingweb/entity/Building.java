@@ -68,7 +68,7 @@ public class Building extends BaseEntity {
     @Column(name = "carfee")
     private String carFee;
 
-    @Column(name = "motorfee")
+    @Column(name = "motofee")
     private String motorFee;
 
     @Column(name = "overtimefee")

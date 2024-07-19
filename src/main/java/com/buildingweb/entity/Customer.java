@@ -42,7 +42,7 @@ public class Customer extends BaseEntity {
     private Integer isActive;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "assignmentcustomer", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JoinTable(name = "assignmentcustomer", joinColumns = @JoinColumn(name = "customerid"), inverseJoinColumns = @JoinColumn(name = "staffid"))
     private List<User> users = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer")

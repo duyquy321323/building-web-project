@@ -45,7 +45,8 @@ public class UserConverter {
         user.setPassword(passwordEncoder.encode(password));
         user.setStatus(1);
         user.setRoles(
-                request.getRoles().stream().map(it -> roleService.getRoleByCode(it)).collect(Collectors.toList()));
+                request.getRoles().stream().distinct().map(it -> roleService.getRoleByCode(it))
+                        .collect(Collectors.toList()));
         return user;
     }
 }

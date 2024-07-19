@@ -33,10 +33,10 @@ public class Transaction extends BaseEntity {
     private String note;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "staff_id", nullable = false)
+    @JoinColumn(name = "staffid", nullable = false)
     private User user;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customerid", nullable = false)
     private Customer customer;
 }

@@ -14,4 +14,6 @@ public interface CustomerRepositoryCustom {
             Pageable pageable);
 
     public List<Customer> findAllByUserAndIsActive(User user, Integer isActive);
+
+    public Customer findByIdAndIsActiveAndStaff(Long id, Integer isActive, User user);
 }
