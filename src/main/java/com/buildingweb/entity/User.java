@@ -1,35 +1,73 @@
 package com.buildingweb.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "user")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+import lombok.Getter;
+import lombok.Setter;
 
-    @Column(name = "username")
+@Entity
+@Getter
+@Setter
+@Table(name = "user")
+public class User extends BaseEntity {
+
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "password")
     private String password;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
     @Column(name = "fullname")
     private String fullname;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "users") // map bởi chủ sở hữu
-    private List<Building> buildings;
+    @Column(name = "phone")
+    private String phoneNumber;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "status")
+    private Integer status;
+
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    private List<Building> buildings = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", nullable = false), inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false))
+    private List<Role> roles = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    private List<Customer> customers = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Transaction> transactions = new ArrayList<>();
+
+    public Boolean isStaff() {
+        for (Role role : roles) {
+            if (role.getCode().toString().equals("STAFF")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Boolean isManager() {
+        for (Role role : roles) {
+            if (role.getCode().toString().equals("MANAGER")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

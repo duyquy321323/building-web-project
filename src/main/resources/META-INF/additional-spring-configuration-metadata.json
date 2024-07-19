@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "jwt.expiration",
+      "type": "java.lang.String",
+      "description": "A description for 'jwt.expiration'"
+    },
+    {
+      "name": "key.remember-me",
+      "type": "java.lang.String",
+      "description": "A description for 'key.remember-me'"
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "A description for 'jwt.secret'"
+    },
+    {
+      "name": "admin.account.password",
+      "type": "java.lang.String",
+      "description": "A description for 'admin.account.password'"
+    }
+  ]
+}

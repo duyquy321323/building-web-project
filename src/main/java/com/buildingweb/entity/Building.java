@@ -1,54 +1,54 @@
 package com.buildingweb.entity;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.buildingweb.enums.District;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @Table(name = "building")
-public class Building {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Building extends BaseEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @JoinColumn(name = "district_id")
-    @ManyToOne
-    private District district;
+    @Column(name = "street", nullable = false)
+    private String street;
 
-    @Column(name = "ward")
+    @Column(name = "ward", nullable = false)
     private String ward;
 
-    @Column(name = "street")
-    private String street;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "district", nullable = false)
+    private District district;
 
     @Column(name = "structure")
     private String structure;
 
-    @Column(name = "number_of_basement")
-    private Integer numberOfBasement;
+    @Column(name = "numberofbasement")
+    private Long numberOfBasement;
 
-    @Column(name = "floor_area")
-    private Integer floorArea;
+    @Column(name = "floorarea", nullable = false)
+    private Long floorArea;
 
     @Column(name = "direction")
     private String direction;
@@ -56,59 +56,67 @@ public class Building {
     @Column(name = "level")
     private String level;
 
-    @Column(name = "rent_price")
-    private Integer rentPrice;
+    @Column(name = "rentprice", nullable = false)
+    private Long rentPrice;
 
-    @Column(name = "rent_price_description")
-    private String renPriceDescription;
+    @Column(name = "rentpricedescription", columnDefinition = "TEXT")
+    private String rentPriceDescription;
 
-    @Column(name = "service_fee")
-    private Integer serviceFee;
+    @Column(name = "servicefee")
+    private String serviceFee;
 
-    @Column(name = "car_fee")
-    private Integer carFee;
+    @Column(name = "carfee")
+    private String carFee;
 
-    @Column(name = "overtime_fee")
-    private Integer overtimeFee;
+    @Column(name = "motofee")
+    private String motorFee;
 
-    @Column(name = "electricity")
-    private Integer electricity;
+    @Column(name = "overtimefee")
+    private String overtimeFee;
+
+    @Column(name = "waterfee")
+    private String waterFee;
+
+    @Column(name = "electricityfee")
+    private String electricity;
 
     @Column(name = "deposit")
-    private Integer deposit;
+    private String deposit;
 
     @Column(name = "payment")
-    private Integer payment;
+    private String payment;
 
-    @Column(name = "rent_time")
-    private Integer rentTime;
+    @Column(name = "renttime")
+    private String rentTime;
 
-    @Column(name = "descoration_time")
-    private Integer descorationTime;
+    @Column(name = "decorationtime")
+    private String decorationTime;
 
-    @Column(name = "managerment_name")
-    private String managermentName;
+    @Column(name = "brokeragefee", precision = 13, scale = 2)
+    private BigDecimal brokerageFee;
 
-    @Column(name = "brokerage_fee")
-    private Integer brokerageFee;
+    @Column(name = "type", nullable = false)
+    private String rentTypes;
 
     @Column(name = "note")
     private String note;
 
-    @Column(name = "manager_phonenumber")
-    private String managerPhonenumber;
+    @Column(name = "managername")
+    private String managerName;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "building")
-    private List<RentArea> rentAreas;
+    @Column(name = "managerphone")
+    private String managerPhoneNumber;
 
-    @ManyToMany
-    @JoinTable(
-        name = "assignment_building",
-        joinColumns = @JoinColumn(name = "building_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> users;
+    @Lob
+    @Column(name = "linkofbuilding", columnDefinition = "LONGBLOB")
+    private byte[] linkOfBuilding;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "buildings")
-    private List<RentType> rentTypes;
+    @OneToMany(cascade = { CascadeType.PERSIST,
+            CascadeType.MERGE,
+            CascadeType.REMOVE }, mappedBy = "building", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<RentArea> rentAreas = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "assignmentbuilding", joinColumns = @JoinColumn(name = "buildingid", nullable = false), inverseJoinColumns = @JoinColumn(name = "staffid", nullable = false))
+    private List<User> users = new ArrayList<>();
 }

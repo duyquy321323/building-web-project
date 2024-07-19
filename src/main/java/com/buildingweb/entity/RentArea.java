@@ -2,27 +2,32 @@ package com.buildingweb.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Entity
-@Table(name = "rent_area")
-public class RentArea {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "rentarea")
+public class RentArea extends BaseEntity {
 
-    @Column(name = "code")
-    private String code;
+    @Column(name = "value", nullable = false)
+    private Long value;
 
-    @Column(name = "area")
-    private Integer area;
-
-    @ManyToOne
-    @JoinColumn(name = "building_id")
+    @ManyToOne // EAGER
+    @JoinColumn(name = "buildingid", nullable = false)
     private Building building;
+
+    @Override
+    public String toString() {
+        return this.getValue().toString();
+    }
 }
