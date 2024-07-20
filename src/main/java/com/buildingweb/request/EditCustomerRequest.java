@@ -2,6 +2,8 @@ package com.buildingweb.request;
 
 import javax.validation.constraints.NotBlank;
 
+import com.buildingweb.enums.StatusConst;
+
 import lombok.Getter;
 
 @Getter
@@ -14,5 +16,5 @@ public class EditCustomerRequest {
     private String nameCompany;
     @NotBlank(message = "demand is not blank")
     private String demand;
-    private String status;
+    private StatusConst status;
 }

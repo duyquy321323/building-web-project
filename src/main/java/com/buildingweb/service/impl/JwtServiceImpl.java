@@ -91,4 +91,9 @@ public class JwtServiceImpl implements JwtService {
                                                                                        // nhau và token chưa hết hạn thì
                                                                                        // hợp lệ
     }
+
+    @Override
+    public Date extractExpirationToken(String token) {
+        return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getPayload().getExpiration();
+    }
 }

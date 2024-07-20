@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buildingweb.enums.RoleConst;
+import com.buildingweb.enums.StatusConst;
 import com.buildingweb.request.CreateAccountRequest;
 import com.buildingweb.request.CustomerRequest;
 import com.buildingweb.service.CustomerService;
@@ -95,7 +96,7 @@ public class AdminController {
     @PostMapping("/customer")
     @Operation(summary = "Add New Customer", description = "Admin can be add new customer")
     public ResponseEntity<?> addNewCustomer(@Valid @RequestBody CustomerRequest request,
-            BindingResult result, String status) {
+            BindingResult result, StatusConst status) {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
                     .collect(Collectors.toList());

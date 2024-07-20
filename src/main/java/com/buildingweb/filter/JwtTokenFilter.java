@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.buildingweb.service.BlackListService;
 import com.buildingweb.service.JwtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private RememberMeServices rememberMeServices;
+
+    @Autowired
+    private BlackListService blackListService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -67,6 +71,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
             final String token = authHeader.substring(7); // cắt prefix của token đi
+            if (blackListService.isBlackList(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
             final String username = jwtService.extractUsername(token); // lấy username từ token + check validate token
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) { // kiểm tra có tồn
                                                                                                       // tại username

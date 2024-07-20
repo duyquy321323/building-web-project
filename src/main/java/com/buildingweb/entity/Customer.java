@@ -5,12 +5,16 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.buildingweb.enums.StatusConst;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +40,8 @@ public class Customer extends BaseEntity {
     private String demand;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(value = EnumType.STRING)
+    private StatusConst status;
 
     @Column(name = "is_active", nullable = false)
     private Integer isActive;

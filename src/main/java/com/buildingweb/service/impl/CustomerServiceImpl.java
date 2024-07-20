@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.buildingweb.converter.CustomerConverter;
 import com.buildingweb.entity.Customer;
 import com.buildingweb.entity.User;
+import com.buildingweb.enums.StatusConst;
 import com.buildingweb.exception.custom.EntityNotFoundException;
 import com.buildingweb.exception.custom.NotAllowRoleException;
 import com.buildingweb.exception.custom.RequestNullException;
@@ -37,6 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     public void requestContact(CustomerRequest request) {
         Customer customer = customerConverter.customerRequestToCustomer(request);
+        customer.setStatus(StatusConst.CHUA_XU_LY);
         customerRepository.save(customer);
     };
 
@@ -84,7 +86,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void addNewCustomer(CustomerRequest request, String status) {
+    public void addNewCustomer(CustomerRequest request, StatusConst status) {
         Customer customer = customerConverter.customerRequestToCustomer(request);
         customer.setStatus(status);
         customerRepository.save(customer);
