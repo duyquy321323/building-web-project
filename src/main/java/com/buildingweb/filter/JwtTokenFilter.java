@@ -48,8 +48,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException { // hàm này dùng để kiểm tra là request có cần xác thực mới vào được
                                                    // không, nếu có thì đã xác thực chưa, nếu chưa thì không cho vào
         try {
-            if (rememberMeServices.autoLogin(request, response)
-                    .isAuthenticated()) { // nếu cookie remember me vẫn còn
+            if (rememberMeServices.autoLogin(request, response) != null
+                    && SecurityContextHolder.getContext().getAuthentication() != null) { // nếu cookie remember me vẫn
+                                                                                         // còn
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -124,9 +125,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("/buildings/search", "POST"),
                 Pair.of("/customer/contact", "POST"),
                 Pair.of("/buildings/", "GET"),
-                Pair.of("/login", "POST"),
-                Pair.of("/register", "POST"),
-                Pair.of("/logout", "POST"),
+                Pair.of("/account/login", "POST"),
+                Pair.of("/account/register", "POST"),
                 Pair.of("/swagger-ui", "GET"),
                 Pair.of("/v3/api-docs", "GET"),
                 Pair.of("/API license URL", "GET"));

@@ -31,6 +31,9 @@ public class BlackListServiceImpl implements BlackListService {
 
     @Override
     public Boolean isBlackList(String token) {
-        return (Boolean) redisTemplate.opsForValue().get(BLACK_LIST_PREFIX + token);
+        Boolean isBL = (Boolean) redisTemplate.opsForValue().get(BLACK_LIST_PREFIX + token);
+        if (isBL != null)
+            return isBL;
+        return false;
     }
 }

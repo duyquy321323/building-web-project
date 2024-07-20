@@ -1,5 +1,7 @@
 package com.buildingweb.config;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
@@ -98,7 +100,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                 .cors(Customizer.withDefaults())
                                 .authorizeRequests(requests -> requests
                                                 // pemitAll
-                                                .antMatchers(HttpMethod.POST, "/login", "/register", "/logout",
+                                                .antMatchers(HttpMethod.POST, "/account/login", "/account/register",
                                                                 "/buildings/search", "/customer/contact")
                                                 .permitAll()
                                                 .antMatchers(HttpMethod.GET, "/buildings/**", "/swagger-ui/**",
@@ -124,14 +126,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                                 "/admin/password",
                                                                 "/admin/assign-customer")
                                                 .hasRole("MANAGER")
+                                                .antMatchers(HttpMethod.POST, "/account/logout").authenticated()
                                                 // deny
                                                 .anyRequest().denyAll())
                                 .rememberMe(rm -> rm.rememberMeServices(
                                                 rememberMeServices()).key(rememberMeKey))
                                 .addFilterBefore(jwtTokenFilter(),
-                                                UsernamePasswordAuthenticationFilter.class)
-                                .logout(logout -> logout.deleteCookies("JSESSIONID", "remember-me")
-                                                .invalidateHttpSession(true).addLogoutHandler(logoutHandler())
-                                                .permitAll());
+                                                LogoutFilter.class)
+                                .logout(logout -> logout.logoutUrl("/account/logout")
+                                                .deleteCookies("JSESSIONID", "remember-me")
+                                                .logoutSuccessHandler((request, response, authentication) -> response
+                                                                .setStatus(HttpServletResponse.SC_OK))
+                                                .invalidateHttpSession(true).addLogoutHandler(logoutHandler()));
         }
 }
