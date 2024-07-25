@@ -1,5 +1,8 @@
 package com.buildingweb.enums;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import lombok.Getter;
 
 @Getter
@@ -12,5 +15,13 @@ public enum RentType {
 
     RentType(String name) {
         this.name = name;
+    }
+
+    public static Map<String, String> rentTypes() {
+        Map<String, String> rentTypes = new TreeMap<>();
+        for (RentType it : RentType.values()) {
+            rentTypes.put(it.toString(), it.name);
+        }
+        return rentTypes;
     }
 }

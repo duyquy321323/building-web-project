@@ -12,11 +12,13 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.buildingweb.entity.Building;
 import com.buildingweb.entity.Role;
 import com.buildingweb.entity.User;
 import com.buildingweb.enums.RoleConst;
@@ -24,6 +26,7 @@ import com.buildingweb.repository.custom.UserRepositoryCustom;
 
 import lombok.SneakyThrows;
 
+@Transactional
 public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
@@ -39,6 +42,31 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         Join<User, Role> roleJoin = userRoot.join("roles", JoinType.LEFT); // join 2 bảng
         predicates.add(criteriaBuilder.equal(roleJoin.get("code"), role));
         predicates.add(criteriaBuilder.equal(userRoot.get("status"), status));
+        query.select(userRoot).distinct(true).where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+        List<User> users = new ArrayList<>();
+        try {
+            users = entityManager.createQuery(query).getResultList();
+        } catch (Exception e) {
+            throw new SQLException("Error: " + e.getMessage());
+        }
+        return new PageImpl<>(users, pageable, users.size());
+    }
+
+    @Override
+    @SneakyThrows
+    public Page<User> findAllByRoleAndStatusAndIdBuilding(RoleConst role, Integer status, Long idBuilding,
+            Pageable pageable) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy builder partern criteria
+        CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class); // tạo criteria query cho đối tượng user
+        Root<User> userRoot = query.from(User.class); // lập chủ sở hữu là User
+        List<Predicate> predicates = new ArrayList<>(); // danh sách các điều kiện
+
+        Join<User, Role> roleJoin = userRoot.join("roles", JoinType.LEFT); // join 2 bảng
+        predicates.add(criteriaBuilder.equal(roleJoin.get("code"), role));
+        predicates.add(criteriaBuilder.equal(userRoot.get("status"), status));
+
+        Join<User, Building> buildingJoin = userRoot.join("buildings", JoinType.LEFT);
+        predicates.add(criteriaBuilder.equal(buildingJoin.get("id"), idBuilding));
         query.select(userRoot).distinct(true).where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         List<User> users = new ArrayList<>();
         try {

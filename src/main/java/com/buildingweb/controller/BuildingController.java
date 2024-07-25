@@ -62,7 +62,7 @@ public class BuildingController {
     }
 
     @PostMapping("/new")
-    @Operation(summary = "Add new building", description = "Add new building to database multipart/form-data.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = BuildingRequestAdd.class))))
+    @Operation(summary = "Add new building", description = "Add new building to database multipart/form-data.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json", schema = @Schema(implementation = BuildingRequestAdd.class))))
     public ResponseEntity<?> addBuilding(@Valid BuildingRequestAdd buildingRequest, BindingResult result) { // biến
                                                                                                             // dùng
                                                                                                             // để

@@ -19,7 +19,7 @@ public interface UserService {
 
     public void register(RegisterRequest request);
 
-    public Page<UserDTO> getAllStaff(Pageable pageable);
+    public Page<UserDTO> getStaff(Pageable pageable, Long idBuilding);
 
     public void deliverTheBuilding(List<Long> id, Long buildingId);
 

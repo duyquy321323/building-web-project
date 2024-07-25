@@ -30,7 +30,9 @@ public class UserConverter {
     private PasswordEncoder passwordEncoder;
 
     public UserDTO toUserDTO(User user) {
-        return modelMapper.map(user, UserDTO.class);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        userDTO.setRoles(user.getRoles().stream().map(it -> it.getCode()).collect(Collectors.toList()));
+        return userDTO;
     }
 
     public User registerRequestToUser(RegisterRequest request) {

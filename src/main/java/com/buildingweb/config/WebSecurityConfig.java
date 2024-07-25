@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,8 +25,6 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import com.buildingweb.filter.JwtTokenFilter;
 import com.buildingweb.security.CustomHandlerLogout;
 import com.buildingweb.security.CustomUserDetailsSevice;
-
-import org.springframework.security.config.Customizer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -104,7 +103,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                                 "/buildings/search", "/customer/contact")
                                                 .permitAll()
                                                 .antMatchers(HttpMethod.GET, "/buildings/**", "/swagger-ui/**",
-                                                                "/v3/api-docs/**", "/v3/api-docs", "/API license URL")
+                                                                "/v3/api-docs/**", "/v3/api-docs", "/API license URL",
+                                                                "/util/district-code", "/util/rent-type-code")
                                                 .permitAll()
                                                 // manager or staff
                                                 .antMatchers(HttpMethod.POST, "/customer/", "/transaction/")
@@ -129,6 +129,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                 .antMatchers(HttpMethod.POST, "/account/logout").authenticated()
                                                 // deny
                                                 .anyRequest().denyAll())
+                                // .sessionManagement(ss ->
+                                // ss.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .rememberMe(rm -> rm.rememberMeServices(
                                                 rememberMeServices()).key(rememberMeKey))
                                 .addFilterBefore(jwtTokenFilter(),

@@ -3,7 +3,6 @@ package com.buildingweb.converter;
 import java.util.stream.Collectors;
 
 import org.modelmapper.Condition;
-import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,6 +72,6 @@ public class BuildingConverter {
         if (buildingRequestAdd.getLinkOfBuilding() != null && !buildingRequestAdd.getLinkOfBuilding().isEmpty()) {
             building.setLinkOfBuilding(buildingRequestAdd.getLinkOfBuilding().getBytes());
         }
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
+        modelMapper.getConfiguration().setPropertyCondition(null);
     }
 }

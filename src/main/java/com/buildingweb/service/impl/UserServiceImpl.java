@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
                 rememberMeServices.loginSuccess(request2, response, authentication); // nếu có remember me
                 String token = jwtService.generateToken(user); // tạo token cho user
                 UserDTO userDTO = userConverter.toUserDTO(user);
+                userDTO.setExpiryTime(jwtService.extractExpirationToken(token).getTime());
                 userDTO.setToken(token);
                 return userDTO;
             }
@@ -118,7 +119,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDTO> getAllStaff(Pageable pageable) {
+    public Page<UserDTO> getStaff(Pageable pageable, Long idBuilding) {
+        if (idBuilding != null)
+            return userRepository.findAllByRoleAndStatusAndIdBuilding(RoleConst.STAFF, 1, idBuilding, pageable)
+                    .map(it -> userConverter.toUserDTO(it));
         return userRepository.findAllByRoleAndStatus(RoleConst.STAFF, 1, pageable)
                 .map(it -> userConverter.toUserDTO(it));
     }

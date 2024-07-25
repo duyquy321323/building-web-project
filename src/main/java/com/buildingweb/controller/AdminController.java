@@ -42,10 +42,11 @@ public class AdminController {
     // Lấy các thông tin nhân viên ra
     @GetMapping("/staffs")
     @Operation(summary = "Get all staff", description = "Get all staff status 1 in database now.")
-    public ResponseEntity<?> getAllStaff(@RequestParam(required = false, defaultValue = "0") Integer pageNo,
+    public ResponseEntity<?> getAllStaff(@RequestParam(required = false) Long idBuilding,
+            @RequestParam(required = false, defaultValue = "0") Integer pageNo,
             @RequestParam(required = false, defaultValue = "2") Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        return ResponseEntity.ok().body(userService.getAllStaff(pageable));
+        return ResponseEntity.ok().body(userService.getStaff(pageable, idBuilding));
     }
 
     // Giao tòa nhà cho nhân viên quản lý
