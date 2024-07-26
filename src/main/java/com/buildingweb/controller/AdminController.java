@@ -49,6 +49,13 @@ public class AdminController {
         return ResponseEntity.ok().body(userService.getStaff(pageable, idBuilding));
     }
 
+    // Lấy toàn bộ tài khoản theo fullname
+    @Operation(summary = "Get account", description = "Get all account status 1 and fullname.")
+    @GetMapping("/account")
+    public ResponseEntity<?> getAccount(@RequestParam(required = false) String fullname) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getByFullname(fullname));
+    }
+
     // Giao tòa nhà cho nhân viên quản lý
     @PostMapping("/assign-building")
     @Operation(summary = "Building transaction", description = "Transaction the building for staff.")

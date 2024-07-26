@@ -13,9 +13,10 @@ import com.buildingweb.model.UserDTO;
 import com.buildingweb.request.CreateAccountRequest;
 import com.buildingweb.request.LoginRequest;
 import com.buildingweb.request.RegisterRequest;
+import com.buildingweb.response.LoginResponse;
 
 public interface UserService {
-    public UserDTO login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response);
+    public LoginResponse login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response);
 
     public void register(RegisterRequest request);
 
@@ -32,4 +33,6 @@ public interface UserService {
     public void resetPassword(String username);
 
     public void deliverTheCustomer(Long idCustomer, List<Long> idStaff);
+
+    public List<UserDTO> getByFullname(String fullname);
 }

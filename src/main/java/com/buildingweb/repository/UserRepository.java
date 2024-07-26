@@ -10,5 +10,7 @@ import com.buildingweb.repository.custom.UserRepositoryCustom;
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
     public User findByUsernameAndStatus(String username, Integer status);
 
+    public List<User> findByFullnameContainingAndStatus(String fullname, Integer status);
+
     public List<User> findByIdInAndStatus(List<Long> userIds, Integer status);
 }

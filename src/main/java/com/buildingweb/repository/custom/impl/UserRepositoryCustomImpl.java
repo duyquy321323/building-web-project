@@ -23,6 +23,7 @@ import com.buildingweb.entity.Role;
 import com.buildingweb.entity.User;
 import com.buildingweb.enums.RoleConst;
 import com.buildingweb.repository.custom.UserRepositoryCustom;
+import com.buildingweb.utils.UtilFunction;
 
 import lombok.SneakyThrows;
 
@@ -33,29 +34,8 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
     @Override
     @SneakyThrows
-    public Page<User> findAllByRoleAndStatus(RoleConst role, Integer status, Pageable pageable) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy builder partern criteria
-        CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class); // tạo criteria query cho đối tượng user
-        Root<User> userRoot = query.from(User.class); // lập chủ sở hữu là User
-        List<Predicate> predicates = new ArrayList<>(); // danh sách các điều kiện
-
-        Join<User, Role> roleJoin = userRoot.join("roles", JoinType.LEFT); // join 2 bảng
-        predicates.add(criteriaBuilder.equal(roleJoin.get("code"), role));
-        predicates.add(criteriaBuilder.equal(userRoot.get("status"), status));
-        query.select(userRoot).distinct(true).where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-        List<User> users = new ArrayList<>();
-        try {
-            users = entityManager.createQuery(query).getResultList();
-        } catch (Exception e) {
-            throw new SQLException("Error: " + e.getMessage());
-        }
-        return new PageImpl<>(users, pageable, users.size());
-    }
-
-    @Override
-    @SneakyThrows
     public Page<User> findAllByRoleAndStatusAndIdBuilding(RoleConst role, Integer status, Long idBuilding,
-            Pageable pageable) {
+            Pageable pageable) throws SQLException {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy builder partern criteria
         CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class); // tạo criteria query cho đối tượng user
         Root<User> userRoot = query.from(User.class); // lập chủ sở hữu là User
@@ -65,8 +45,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         predicates.add(criteriaBuilder.equal(roleJoin.get("code"), role));
         predicates.add(criteriaBuilder.equal(userRoot.get("status"), status));
 
-        Join<User, Building> buildingJoin = userRoot.join("buildings", JoinType.LEFT);
-        predicates.add(criteriaBuilder.equal(buildingJoin.get("id"), idBuilding));
+        if (UtilFunction.checkLong(idBuilding)) {
+            Join<User, Building> buildingJoin = userRoot.join("buildings", JoinType.LEFT);
+            predicates.add(criteriaBuilder.equal(buildingJoin.get("id"), idBuilding));
+        }
         query.select(userRoot).distinct(true).where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         List<User> users = new ArrayList<>();
         try {

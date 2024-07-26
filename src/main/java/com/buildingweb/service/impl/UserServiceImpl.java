@@ -39,10 +39,13 @@ import com.buildingweb.repository.UserRepository;
 import com.buildingweb.request.CreateAccountRequest;
 import com.buildingweb.request.LoginRequest;
 import com.buildingweb.request.RegisterRequest;
+import com.buildingweb.response.LoginResponse;
 import com.buildingweb.service.JwtService;
 import com.buildingweb.service.UserService;
+import com.buildingweb.utils.UtilFunction;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @RequiredArgsConstructor
 @Service
@@ -64,7 +67,7 @@ public class UserServiceImpl implements UserService {
     private String passwordLocal;
 
     @Override
-    public UserDTO login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response) {
+    public LoginResponse login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response) {
         if (request != null) {
             User user = userRepository.findByUsernameAndStatus(request.getUsername(), 1);
             if (user != null) {
@@ -91,10 +94,10 @@ public class UserServiceImpl implements UserService {
                                                                                       // có thể truy cập vào
                 rememberMeServices.loginSuccess(request2, response, authentication); // nếu có remember me
                 String token = jwtService.generateToken(user); // tạo token cho user
-                UserDTO userDTO = userConverter.toUserDTO(user);
-                userDTO.setExpiryTime(jwtService.extractExpirationToken(token).getTime());
-                userDTO.setToken(token);
-                return userDTO;
+                LoginResponse userLogin = userConverter.toLoginResponse(user);
+                userLogin.setExpiryTime(jwtService.extractExpirationToken(token).getTime());
+                userLogin.setToken(token);
+                return userLogin;
             }
             throw new EntityNotFoundException("Account is not found");
         }
@@ -119,11 +122,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @SneakyThrows
     public Page<UserDTO> getStaff(Pageable pageable, Long idBuilding) {
-        if (idBuilding != null)
-            return userRepository.findAllByRoleAndStatusAndIdBuilding(RoleConst.STAFF, 1, idBuilding, pageable)
-                    .map(it -> userConverter.toUserDTO(it));
-        return userRepository.findAllByRoleAndStatus(RoleConst.STAFF, 1, pageable)
+        return userRepository.findAllByRoleAndStatusAndIdBuilding(RoleConst.STAFF, 1, idBuilding, pageable)
                 .map(it -> userConverter.toUserDTO(it));
     }
 
@@ -209,5 +210,15 @@ public class UserServiceImpl implements UserService {
             return;
         }
         throw new EntityNotFoundException("Customer is not found");
+    }
+
+    @Override
+    public List<UserDTO> getByFullname(String fullname) {
+        if (UtilFunction.checkString(fullname)) {
+            return userRepository.findByFullnameContainingAndStatus(fullname, 1).stream()
+                    .map(it -> userConverter.toUserDTO(it))
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 }

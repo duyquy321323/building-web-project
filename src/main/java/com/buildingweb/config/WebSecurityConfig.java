@@ -117,7 +117,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                 .antMatchers(HttpMethod.DELETE, "/buildings/**", "/admin/account",
                                                                 "/customer/")
                                                 .hasRole("MANAGER")
-                                                .antMatchers(HttpMethod.GET, "/admin/staffs").hasRole("MANAGER")
+                                                .antMatchers(HttpMethod.GET, "/admin/staffs", "/admin/account")
+                                                .hasRole("MANAGER")
                                                 .antMatchers(HttpMethod.POST,
                                                                 "/buildings/new", "/admin/assign-building",
                                                                 "/admin/account", "/admin/customer")
