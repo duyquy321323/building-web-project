@@ -20,10 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
 import com.buildingweb.filter.JwtTokenFilter;
 import com.buildingweb.security.CustomHandlerLogout;
+import com.buildingweb.security.CustomRememberMeServices;
 import com.buildingweb.security.CustomUserDetailsSevice;
 
 import lombok.RequiredArgsConstructor;
@@ -86,11 +86,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Bean
         public RememberMeServices rememberMeServices() {
-                TokenBasedRememberMeServices tokenBasedRememberMeServices = new TokenBasedRememberMeServices(secret,
+                CustomRememberMeServices customRememberMeServices = new CustomRememberMeServices(rememberMeKey,
                                 userDetailsService());
-                tokenBasedRememberMeServices.setParameter("remember-me");
-                tokenBasedRememberMeServices.setTokenValiditySeconds(500);
-                return tokenBasedRememberMeServices;
+                customRememberMeServices.setParameter("remember-me");
+                customRememberMeServices.setTokenValiditySeconds(1209600); // 2 tuần
+                return customRememberMeServices;
         }
 
         @Override
@@ -104,7 +104,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                 .permitAll()
                                                 .antMatchers(HttpMethod.GET, "/buildings/**", "/swagger-ui/**",
                                                                 "/v3/api-docs/**", "/v3/api-docs", "/API license URL",
-                                                                "/util/district-code", "/util/rent-type-code")
+                                                                "/util/district-code", "/util/rent-type-code",
+                                                                "/util/status-code", "/util/transaction-code",
+                                                                "/util/role-code")
                                                 .permitAll()
                                                 // manager or staff
                                                 .antMatchers(HttpMethod.POST, "/customer/", "/transaction/")
@@ -128,6 +130,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                                 "/admin/assign-customer")
                                                 .hasRole("MANAGER")
                                                 .antMatchers(HttpMethod.POST, "/account/logout").authenticated()
+                                                .antMatchers(HttpMethod.PUT, "/account/profile-edit").authenticated()
                                                 // deny
                                                 .anyRequest().denyAll())
                                 // .sessionManagement(ss ->

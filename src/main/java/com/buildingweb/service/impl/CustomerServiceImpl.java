@@ -88,7 +88,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void addNewCustomer(CustomerRequest request, StatusConst status) {
         Customer customer = customerConverter.customerRequestToCustomer(request);
-        customer.setStatus(status);
+        if (status == null) {
+            customer.setStatus(StatusConst.CHUA_XU_LY);
+        } else
+            customer.setStatus(status);
         customerRepository.save(customer);
     }
 }

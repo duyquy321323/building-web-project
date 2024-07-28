@@ -2,6 +2,8 @@ package com.buildingweb.converter;
 
 import java.util.stream.Collectors;
 
+import javax.inject.Named;
+
 import org.modelmapper.Condition;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,8 @@ public class BuildingConverter {
     private ModelMapper modelMapper;
 
     @Autowired
-    private Condition<?, ?> skipNullAndBlank;
+    @Named("update")
+    private ModelMapper modelMapperUpdate;
 
     public BuildingResponse toBuildingResponse(Building building) {
         StringBuilder address = new StringBuilder();
@@ -57,9 +60,8 @@ public class BuildingConverter {
     }
 
     @SneakyThrows
-    public void buildingRequestAddToBuildingExisted(BuildingRequestAdd buildingRequestAdd, Building building) {
-        modelMapper.getConfiguration().setPropertyCondition(skipNullAndBlank);
-        modelMapper.map(buildingRequestAdd, building);
+    public Building buildingRequestAddToBuildingExisted(BuildingRequestAdd buildingRequestAdd, Building building) {
+        modelMapperUpdate.map(buildingRequestAdd, building);
         if (buildingRequestAdd.getRentTypes() != null && !buildingRequestAdd.getRentTypes().isEmpty()) {
             building.setRentTypes(buildingRequestAdd.getRentTypes().stream().map(it -> it.toString())
                     .collect(Collectors.joining(",")));
@@ -72,6 +74,6 @@ public class BuildingConverter {
         if (buildingRequestAdd.getLinkOfBuilding() != null && !buildingRequestAdd.getLinkOfBuilding().isEmpty()) {
             building.setLinkOfBuilding(buildingRequestAdd.getLinkOfBuilding().getBytes());
         }
-        modelMapper.getConfiguration().setPropertyCondition(null);
+        return building;
     }
 }

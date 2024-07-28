@@ -2,6 +2,8 @@ package com.buildingweb.converter;
 
 import java.util.stream.Collectors;
 
+import javax.inject.Named;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,9 +13,12 @@ import org.springframework.stereotype.Component;
 import com.buildingweb.entity.User;
 import com.buildingweb.model.UserDTO;
 import com.buildingweb.request.CreateAccountRequest;
+import com.buildingweb.request.ProfileEditRequest;
 import com.buildingweb.request.RegisterRequest;
 import com.buildingweb.response.LoginResponse;
 import com.buildingweb.service.RoleService;
+
+import lombok.SneakyThrows;
 
 @Component
 public class UserConverter {
@@ -26,6 +31,10 @@ public class UserConverter {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    @Named("update")
+    private ModelMapper modelMapperEdit;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -54,6 +63,17 @@ public class UserConverter {
     }
 
     public UserDTO toUserDTO(User user) {
-        return modelMapper.map(user, UserDTO.class);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        userDTO.setRoles(user.getRoles().stream().map(it -> it.getCode()).collect(Collectors.toList()));
+        return userDTO;
+    }
+
+    @SneakyThrows
+    public User fromProfileEditRequest(ProfileEditRequest profile, User user) {
+        modelMapperEdit.map(profile, user);
+        if (profile.getAvatar() != null && !profile.getAvatar().isEmpty()) {
+            user.setAvatar(profile.getAvatar().getBytes());
+        }
+        return user;
     }
 }

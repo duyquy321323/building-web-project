@@ -7,9 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.buildingweb.entity.Customer;
 import com.buildingweb.entity.Transaction;
 import com.buildingweb.entity.User;
+import com.buildingweb.enums.TransactionConst;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    public List<Transaction> findAllByCustomerAndUser(Customer customer, User user);
+    public List<Transaction> findAllByCustomerAndUserAndCode(Customer customer, User user, TransactionConst code);
 
-    public List<Transaction> findAllByCustomer(Customer customer);
+    public List<Transaction> findAllByCustomerAndCode(Customer customer, TransactionConst code);
 }

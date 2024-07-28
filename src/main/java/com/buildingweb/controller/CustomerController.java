@@ -65,13 +65,7 @@ public class CustomerController {
 
     @PutMapping("/")
     @Operation(summary = "Edit Customer", description = "Staff or admin can be edit information for customer.")
-    public ResponseEntity<?> editCustomer(@RequestParam Long id, @Valid @RequestBody EditCustomerRequest request,
-            BindingResult result) {
-        if (result.hasErrors()) {
-            List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
-        }
+    public ResponseEntity<?> editCustomer(@RequestParam Long id, @RequestBody EditCustomerRequest request) {
         customerService.editCustomer(id, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

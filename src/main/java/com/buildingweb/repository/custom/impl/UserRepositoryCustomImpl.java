@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.buildingweb.entity.Building;
+import com.buildingweb.entity.Customer;
 import com.buildingweb.entity.Role;
 import com.buildingweb.entity.User;
 import com.buildingweb.enums.RoleConst;
@@ -34,7 +35,8 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
     @Override
     @SneakyThrows
-    public Page<User> findAllByRoleAndStatusAndIdBuilding(RoleConst role, Integer status, Long idBuilding,
+    public Page<User> findAllByRoleAndStatusAndIdBuildingOrIdCustomer(RoleConst role, Integer status, Long idBuilding,
+            Long idCustomer,
             Pageable pageable) throws SQLException {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder(); // lấy builder partern criteria
         CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class); // tạo criteria query cho đối tượng user
@@ -48,6 +50,10 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
         if (UtilFunction.checkLong(idBuilding)) {
             Join<User, Building> buildingJoin = userRoot.join("buildings", JoinType.LEFT);
             predicates.add(criteriaBuilder.equal(buildingJoin.get("id"), idBuilding));
+        }
+        if (UtilFunction.checkLong(idCustomer)) {
+            Join<User, Customer> customerJoin = userRoot.join("customers", JoinType.LEFT);
+            predicates.add(criteriaBuilder.equal(customerJoin.get("id"), idCustomer));
         }
         query.select(userRoot).distinct(true).where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         List<User> users = new ArrayList<>();

@@ -63,34 +63,34 @@ public class Building extends BaseEntity {
     private String rentPriceDescription;
 
     @Column(name = "servicefee")
-    private String serviceFee;
+    private Long serviceFee;
 
     @Column(name = "carfee")
-    private String carFee;
+    private Long carFee;
 
     @Column(name = "motofee")
-    private String motorFee;
+    private Long motorFee;
 
     @Column(name = "overtimefee")
-    private String overtimeFee;
+    private Long overtimeFee;
 
     @Column(name = "waterfee")
-    private String waterFee;
+    private Long waterFee;
 
     @Column(name = "electricityfee")
-    private String electricity;
+    private Long electricity;
 
     @Column(name = "deposit")
-    private String deposit;
+    private Long deposit;
 
     @Column(name = "payment")
-    private String payment;
+    private Long payment;
 
     @Column(name = "renttime")
-    private String rentTime;
+    private Long rentTime;
 
     @Column(name = "decorationtime")
-    private String decorationTime;
+    private Long decorationTime;
 
     @Column(name = "brokeragefee", precision = 13, scale = 2)
     private BigDecimal brokerageFee;
@@ -98,7 +98,7 @@ public class Building extends BaseEntity {
     @Column(name = "type", nullable = false)
     private String rentTypes;
 
-    @Column(name = "note")
+    @Column(name = "note", length = Integer.MAX_VALUE)
     private String note;
 
     @Column(name = "managername")

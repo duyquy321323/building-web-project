@@ -6,7 +6,7 @@ import com.buildingweb.enums.TransactionConst;
 import com.buildingweb.model.TransactionDTO;
 
 public interface TransactionService {
-    public List<TransactionDTO> getTransactionById(Long id);
+    public List<TransactionDTO> getTransactionByIdAndCode(Long id, TransactionConst code);
 
     public void addTransactionById(Long id, String note, TransactionConst code);
 

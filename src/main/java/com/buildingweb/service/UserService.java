@@ -12,6 +12,7 @@ import com.buildingweb.enums.RoleConst;
 import com.buildingweb.model.UserDTO;
 import com.buildingweb.request.CreateAccountRequest;
 import com.buildingweb.request.LoginRequest;
+import com.buildingweb.request.ProfileEditRequest;
 import com.buildingweb.request.RegisterRequest;
 import com.buildingweb.response.LoginResponse;
 
@@ -20,7 +21,7 @@ public interface UserService {
 
     public void register(RegisterRequest request);
 
-    public Page<UserDTO> getStaff(Pageable pageable, Long idBuilding);
+    public Page<UserDTO> getStaff(Pageable pageable, Long idBuilding, Long idCustomer);
 
     public void deliverTheBuilding(List<Long> id, Long buildingId);
 
@@ -34,5 +35,7 @@ public interface UserService {
 
     public void deliverTheCustomer(Long idCustomer, List<Long> idStaff);
 
-    public List<UserDTO> getByFullname(String fullname);
+    public List<UserDTO> getByFullname(String fullname, Long id);
+
+    public LoginResponse editProfile(ProfileEditRequest request, Long id);
 }

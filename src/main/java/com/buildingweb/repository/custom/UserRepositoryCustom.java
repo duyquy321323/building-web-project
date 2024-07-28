@@ -9,6 +9,7 @@ import com.buildingweb.entity.User;
 import com.buildingweb.enums.RoleConst;
 
 public interface UserRepositoryCustom {
-    public Page<User> findAllByRoleAndStatusAndIdBuilding(RoleConst role, Integer status, Long idBuilding,
+    public Page<User> findAllByRoleAndStatusAndIdBuildingOrIdCustomer(RoleConst role, Integer status, Long idBuilding,
+            Long idCustomer,
             Pageable pageable) throws SQLException;
 }

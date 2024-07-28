@@ -19,4 +19,5 @@ public class LoginResponse {
     private String token;
     private Long expiryTime;
     private List<RoleConst> roles;
+    private byte[] avatar;
 }
