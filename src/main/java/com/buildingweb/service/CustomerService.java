@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.buildingweb.enums.StatusConst;
 import com.buildingweb.request.CustomerRequest;
 import com.buildingweb.request.CustomerSearchRequest;
 import com.buildingweb.request.EditCustomerRequest;
@@ -19,5 +20,5 @@ public interface CustomerService {
 
     public void editCustomer(Long id, EditCustomerRequest request);
 
-    public void addNewCustomer(CustomerRequest request, String status);
+    public void addNewCustomer(CustomerRequest request, StatusConst status);
 }

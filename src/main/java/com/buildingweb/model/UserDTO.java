@@ -1,17 +1,17 @@
 package com.buildingweb.model;
 
-import lombok.AllArgsConstructor;
+import java.util.List;
+
+import com.buildingweb.enums.RoleConst;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserDTO {
     private Long id;
-    private String phoneNumber;
     private String fullname;
-    private String token;
+    private String username;
+    private List<RoleConst> roles;
 }

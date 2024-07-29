@@ -1,3 +1,7 @@
-INSERT INTO role(id, name, code) VALUES
-(null, "Quản lý", "MANAGER"),
-(null, "Nhân viên", "STAFF");
+-- INSERT INTO role(id, name, code) VALUES
+-- (null, "Quản lý", "MANAGER"),
+-- (null, "Nhân viên", "STAFF");
+-- INSERT INTO user(id, username, password, fullname, phone, email, status) VALUES
+-- (null, "nguyenvana", "$2a$10$ollMv6WLcVricwBh7OQzI.kr1/Yt8YO1Nt8VzNoL5hPOsSvEbxuWq", "Nguyễn Văn A", "0373071643", "nguyenvana@gmail.com", 1);
+-- INSERT INTO user_role(user_id, role_id) VALUES
+-- (1, 1);

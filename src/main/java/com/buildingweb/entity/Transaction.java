@@ -29,7 +29,7 @@ public class Transaction extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private TransactionConst code;
 
-    @Column(name = "note")
+    @Column(name = "note", length = Integer.MAX_VALUE)
     private String note;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })

@@ -19,6 +19,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.SneakyThrows;
 
 @SuppressWarnings("deprecation")
 @Service
@@ -47,6 +48,7 @@ public class JwtServiceImpl implements JwtService {
         }
     }
 
+    @SneakyThrows
     private Claims extractAllClaims(String token) {
         // có check validate token luôn
         return Jwts.parser().setSigningKey(getSignInKey()) // parser là đối tượng để giải mã, signingkey là
@@ -58,6 +60,7 @@ public class JwtServiceImpl implements JwtService {
                                        // lấy
                                        // payload,header, signture
                 .getBody();// lấy phần payload
+
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -90,5 +93,10 @@ public class JwtServiceImpl implements JwtService {
                                                                                        // username của userDetails giống
                                                                                        // nhau và token chưa hết hạn thì
                                                                                        // hợp lệ
+    }
+
+    @Override
+    public Date extractExpirationToken(String token) {
+        return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getPayload().getExpiration();
     }
 }

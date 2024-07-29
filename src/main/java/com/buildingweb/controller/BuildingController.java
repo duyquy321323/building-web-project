@@ -83,13 +83,7 @@ public class BuildingController {
     // Sửa tòa nhà
     @PutMapping("/")
     @Operation(summary = "Edit building", description = "Edit building to database multipart/form-data.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = BuildingRequestAdd.class))))
-    public ResponseEntity<?> updateBuilding(@RequestParam Long id, @Valid BuildingRequestAdd building,
-            BindingResult result) {
-        if (result.hasErrors()) {
-            List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
-        }
+    public ResponseEntity<?> updateBuilding(@RequestParam Long id, BuildingRequestAdd building) {
         buildingService.updateBuilding(id, building);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

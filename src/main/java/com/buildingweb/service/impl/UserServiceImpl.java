@@ -38,11 +38,15 @@ import com.buildingweb.repository.RoleRepository;
 import com.buildingweb.repository.UserRepository;
 import com.buildingweb.request.CreateAccountRequest;
 import com.buildingweb.request.LoginRequest;
+import com.buildingweb.request.ProfileEditRequest;
 import com.buildingweb.request.RegisterRequest;
+import com.buildingweb.response.LoginResponse;
 import com.buildingweb.service.JwtService;
 import com.buildingweb.service.UserService;
+import com.buildingweb.utils.UtilFunction;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @RequiredArgsConstructor
 @Service
@@ -64,7 +68,7 @@ public class UserServiceImpl implements UserService {
     private String passwordLocal;
 
     @Override
-    public UserDTO login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response) {
+    public LoginResponse login(LoginRequest request, HttpServletRequest request2, HttpServletResponse response) {
         if (request != null) {
             User user = userRepository.findByUsernameAndStatus(request.getUsername(), 1);
             if (user != null) {
@@ -89,11 +93,13 @@ public class UserServiceImpl implements UserService {
                 SecurityContextHolder.getContext().setAuthentication(authentication); // cho người dùng vào ngữ cảnh bảo
                                                                                       // mật hiện tại để từ các api khác
                                                                                       // có thể truy cập vào
-                rememberMeServices.loginSuccess(request2, response, authentication); // nếu có remember me
+                rememberMeServices.loginSuccess(request2, response, authentication); // nếu
+                // có remember me
                 String token = jwtService.generateToken(user); // tạo token cho user
-                UserDTO userDTO = userConverter.toUserDTO(user);
-                userDTO.setToken(token);
-                return userDTO;
+                LoginResponse userLogin = userConverter.toLoginResponse(user);
+                userLogin.setExpiryTime(jwtService.extractExpirationToken(token).getTime());
+                userLogin.setToken(token);
+                return userLogin;
             }
             throw new EntityNotFoundException("Account is not found");
         }
@@ -118,8 +124,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDTO> getAllStaff(Pageable pageable) {
-        return userRepository.findAllByRoleAndStatus(RoleConst.STAFF, 1, pageable)
+    @SneakyThrows
+    public Page<UserDTO> getStaff(Pageable pageable, Long idBuilding, Long idCustomer) {
+        return userRepository
+                .findAllByRoleAndStatusAndIdBuildingOrIdCustomer(RoleConst.STAFF, 1, idBuilding, idCustomer, pageable)
                 .map(it -> userConverter.toUserDTO(it));
     }
 
@@ -170,8 +178,10 @@ public class UserServiceImpl implements UserService {
         if (user != null) {
             List<Role> roles2 = roles.stream().map(it -> roleRepository.findByCode(it))
                     .collect(Collectors.toList());
+            if (UtilFunction.checkString(fullname)) {
+                user.setFullname(fullname);
+            }
             user.setRoles(roles2);
-            user.setFullname(fullname);
             userRepository.save(user);
             return;
         }
@@ -205,5 +215,22 @@ public class UserServiceImpl implements UserService {
             return;
         }
         throw new EntityNotFoundException("Customer is not found");
+    }
+
+    @Override
+    public List<UserDTO> getByFullname(String fullname, Long id) {
+        return userRepository.findByFullnameContainingAndStatusAndIdNot(fullname, 1, id).stream()
+                .map(it -> userConverter.toUserDTO(it))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public LoginResponse editProfile(ProfileEditRequest request, Long id) {
+        User user = userRepository.findByIdAndStatus(id, 1);
+        if (user != null) {
+            userRepository.save(userConverter.fromProfileEditRequest(request, user));
+            return userConverter.toLoginResponse(user);
+        } else
+            throw new EntityNotFoundException("user not found");
     }
 }

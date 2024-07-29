@@ -31,7 +31,7 @@ class SpringSecurityAuditAwareImpl implements AuditorAware<String> {
                                                                                                 // tại ra
         if (authentication == null || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) { // kiểm tra xem đã được xác thực hay chưa
-            return Optional.empty();
+            return Optional.of("anonymousUser");
         }
         UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // lấy thông tin của người dùng ra nếu đã
                                                                                // được xác thực

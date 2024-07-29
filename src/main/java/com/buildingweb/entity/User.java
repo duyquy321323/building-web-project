@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -38,6 +39,10 @@ public class User extends BaseEntity {
 
     @Column(name = "status")
     private Integer status;
+
+    @Column(name = "avatar", columnDefinition = "LONGBLOB")
+    @Lob
+    private byte[] avatar;
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private List<Building> buildings = new ArrayList<>();

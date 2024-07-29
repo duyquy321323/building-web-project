@@ -12,20 +12,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buildingweb.request.LoginRequest;
+import com.buildingweb.request.ProfileEditRequest;
 import com.buildingweb.request.RegisterRequest;
 import com.buildingweb.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "User Controller", description = "Used for user operations and management.")
+@RequestMapping("/account")
 public class UserController {
 
     private final UserService userService;
@@ -54,5 +61,17 @@ public class UserController {
         }
         userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "Logout", description = "Logout this account")
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        return null;
+    }
+
+    @PutMapping("/profile-edit")
+    @Operation(summary = "Edit account for all", description = "Edit account for all", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = ProfileEditRequest.class))))
+    public ResponseEntity<?> editProfile(ProfileEditRequest request, @RequestParam Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.editProfile(request, id));
     }
 }

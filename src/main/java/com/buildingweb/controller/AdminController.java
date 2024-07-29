@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buildingweb.enums.RoleConst;
+import com.buildingweb.enums.StatusConst;
 import com.buildingweb.request.CreateAccountRequest;
 import com.buildingweb.request.CustomerRequest;
 import com.buildingweb.service.CustomerService;
@@ -41,10 +42,20 @@ public class AdminController {
     // Lấy các thông tin nhân viên ra
     @GetMapping("/staffs")
     @Operation(summary = "Get all staff", description = "Get all staff status 1 in database now.")
-    public ResponseEntity<?> getAllStaff(@RequestParam(required = false, defaultValue = "0") Integer pageNo,
+    public ResponseEntity<?> getAllStaff(@RequestParam(required = false) Long idBuilding,
+            @RequestParam(required = false) Long idCustomer,
+            @RequestParam(required = false, defaultValue = "0") Integer pageNo,
             @RequestParam(required = false, defaultValue = "2") Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        return ResponseEntity.ok().body(userService.getAllStaff(pageable));
+        return ResponseEntity.ok().body(userService.getStaff(pageable, idBuilding, idCustomer));
+    }
+
+    // Lấy toàn bộ tài khoản theo fullname
+    @Operation(summary = "Get account", description = "Get all account status 1 and fullname.")
+    @GetMapping("/account")
+    public ResponseEntity<?> getAccount(@RequestParam(required = false) String fullname,
+            @RequestParam Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getByFullname(fullname, id));
     }
 
     // Giao tòa nhà cho nhân viên quản lý
@@ -79,8 +90,9 @@ public class AdminController {
     // Chỉnh sửa thông tin tài khoản
     @PutMapping("/account")
     @Operation(summary = "Edit account", description = "Admin edit information of account")
-    public ResponseEntity<?> editAccount(@RequestParam String username, @RequestParam List<RoleConst> roles,
-            @RequestParam String fullname) {
+    public ResponseEntity<?> editAccount(@RequestParam String username,
+            @RequestParam(required = false) List<RoleConst> roles,
+            @RequestParam(required = false) String fullname) {
         userService.editAccount(username, roles, fullname);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -95,7 +107,7 @@ public class AdminController {
     @PostMapping("/customer")
     @Operation(summary = "Add New Customer", description = "Admin can be add new customer")
     public ResponseEntity<?> addNewCustomer(@Valid @RequestBody CustomerRequest request,
-            BindingResult result, String status) {
+            BindingResult result, @RequestParam(required = false) StatusConst status) {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
                     .collect(Collectors.toList());

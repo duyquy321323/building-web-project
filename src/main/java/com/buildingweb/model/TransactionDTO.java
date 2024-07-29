@@ -1,16 +1,15 @@
 package com.buildingweb.model;
 
-import java.util.Date;
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class TransactionDTO {
-    private Date createdDate;
+    private Long id;
+    private String createdDate;
     private String createdBy;
-    private Date modifiedDate;
+    private String modifiedDate;
     private String modifiedBy;
     private String note;
 }

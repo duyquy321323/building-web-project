@@ -5,10 +5,7 @@ import java.util.List;
 
 public class UtilFunction {
     public static boolean checkString(String s) {
-        if (s != null && !s.equals("")) {
-            return true;
-        }
-        return false;
+        return !s.isBlank();
     }
 
     public static boolean checkLong(Long i) {

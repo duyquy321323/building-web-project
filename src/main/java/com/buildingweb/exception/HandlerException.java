@@ -19,6 +19,8 @@ import com.buildingweb.exception.custom.RequestNullException;
 import com.buildingweb.response.ExceptionResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 @ControllerAdvice
 public class HandlerException {
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -120,6 +122,17 @@ public class HandlerException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> throwJwtException(ExpiredJwtException ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setStatus(HttpStatus.BAD_REQUEST);
+        List<String> details = new ArrayList<>();
+        details.add("Please check token");
+        exceptionResponse.setDetails(details);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<?> throwSQLException(SQLException ex) {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
@@ -130,4 +143,5 @@ public class HandlerException {
         exceptionResponse.setDetails(details);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
+
 }

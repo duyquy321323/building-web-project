@@ -36,7 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionConvert transactionConvert;
 
     @Override
-    public List<TransactionDTO> getTransactionById(Long id) {
+    public List<TransactionDTO> getTransactionByIdAndCode(Long id, TransactionConst code) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         User user = userRepository.findByUsernameAndStatus(userDetails.getUsername(), 1);
@@ -44,9 +44,9 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactions = new ArrayList<>();
         if (customer != null) {
             if (user.isManager()) {
-                transactions = transactionRepository.findAllByCustomer(customer);
+                transactions = transactionRepository.findAllByCustomerAndCode(customer, code);
             } else if (user.isStaff()) {
-                transactions = transactionRepository.findAllByCustomerAndUser(customer, user);
+                transactions = transactionRepository.findAllByCustomerAndUserAndCode(customer, user, code);
                 List<Customer> customers = customerRepository.findAllByUserAndIsActive(user, 1);
                 if (!customers.contains(customer))
                     throw new NotAllowRoleException("This customer is not for you");

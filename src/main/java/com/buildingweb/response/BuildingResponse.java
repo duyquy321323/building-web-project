@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BuildingResponse {
+    private Long id;
     private String name;
     private String address;
     private Long numberOfBasement;
@@ -21,4 +22,5 @@ public class BuildingResponse {
     private Long rentPrice;
     private Long serviceFee;
     private Long brokerageFee;
+    private byte[] linkOfBuilding;
 }

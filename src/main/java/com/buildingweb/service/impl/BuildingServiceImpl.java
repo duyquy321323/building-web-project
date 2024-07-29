@@ -65,8 +65,7 @@ public class BuildingServiceImpl implements BuildingService {
         if (buildingRepository.existsById(id)) {
             Building bui = buildingRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("Building is not found"));
-            buildingConverter.buildingRequestAddToBuildingExisted(building, bui);
-            buildingRepository.save(bui);
+            buildingRepository.save(buildingConverter.buildingRequestAddToBuildingExisted(building, bui));
         } else
             throw new EntityNotFoundException("Building is not found");
     }

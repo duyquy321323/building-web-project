@@ -25,15 +25,17 @@ public class TransactionController {
 
     @Operation(summary = "Get Transaction Details", description = "Get transaction by id customer")
     @GetMapping("/")
-    public ResponseEntity<?> getTransactionByIdCustomer(@RequestParam Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(transactionService.getTransactionById(id));
+    public ResponseEntity<?> getTransactionByIdCustomerAndCode(@RequestParam Long id,
+            @RequestParam String code) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(transactionService.getTransactionByIdAndCode(id, TransactionConst.fromString(code)));
     }
 
     @Operation(summary = "Add Transaction", description = "Add transaction by id customer")
     @PostMapping("/")
     public ResponseEntity<?> addTransactionByIdCustomer(@RequestParam Long id, @RequestParam String note,
-            @RequestParam TransactionConst code) {
-        transactionService.addTransactionById(id, note, code);
+            @RequestParam String code) {
+        transactionService.addTransactionById(id, note, TransactionConst.fromString(code));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

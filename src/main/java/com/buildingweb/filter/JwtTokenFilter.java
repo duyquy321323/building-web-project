@@ -9,10 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.buildingweb.service.JwtService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.lang.NonNull;
@@ -22,6 +18,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.buildingweb.service.BlackListService;
+import com.buildingweb.service.JwtService;
 
 import lombok.NoArgsConstructor;
 
@@ -37,15 +37,26 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     private RememberMeServices rememberMeServices;
 
+    @Autowired
+    private BlackListService blackListService;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException { // hàm này dùng để kiểm tra là request có cần xác thực mới vào được
                                                    // không, nếu có thì đã xác thực chưa, nếu chưa thì không cho vào
+        final String authHeader = request.getHeader("Authorization"); // lấy giá trị của tiêu đề Authorization từ
+        // http
+        if (request.getServletPath().contains("/account/login") && request.getMethod().equals("POST")) {
+            if (authHeader == null)
+                filterChain.doFilter(request, response);
+            else
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        }
         try {
-            if (rememberMeServices.autoLogin(request, response)
-                    .isAuthenticated()) { // nếu cookie remember me vẫn còn
+            if (rememberMeServices.autoLogin(request, response) != null) { // nếu cookie remember me vẫn
+                                                                           // còn
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -58,8 +69,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                                          // đến bộ lọc tiếp theo trong file cấu hình
                 return;
             }
-            final String authHeader = request.getHeader("Authorization"); // lấy giá trị của tiêu đề Authorization từ
-                                                                          // http
             if (authHeader == null || !authHeader.startsWith("Bearer ")) { // không có giá trị token hoặc token ko có
                                                                            // prefix
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED); // gửi lỗi 401 từ server tới
@@ -67,6 +76,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
             final String token = authHeader.substring(7); // cắt prefix của token đi
+            if (blackListService.isBlackList(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
             final String username = jwtService.extractUsername(token); // lấy username từ token + check validate token
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) { // kiểm tra có tồn
                                                                                                       // tại username
@@ -116,9 +129,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("/buildings/search", "POST"),
                 Pair.of("/customer/contact", "POST"),
                 Pair.of("/buildings/", "GET"),
-                Pair.of("/login", "POST"),
-                Pair.of("/register", "POST"),
-                Pair.of("/logout", "POST"),
+                Pair.of("/util/rent-type-code", "GET"),
+                Pair.of("/util/role-code", "GET"),
+                Pair.of("/util/status-code", "GET"),
+                Pair.of("/util/transaction-code", "GET"),
+                Pair.of("/util/district-code", "GET"),
+                Pair.of("/account/register", "POST"),
                 Pair.of("/swagger-ui", "GET"),
                 Pair.of("/v3/api-docs", "GET"),
                 Pair.of("/API license URL", "GET"));

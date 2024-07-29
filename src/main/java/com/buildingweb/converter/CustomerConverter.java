@@ -1,7 +1,10 @@
 package com.buildingweb.converter;
 
-import org.modelmapper.Condition;
-import org.modelmapper.Conditions;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.inject.Named;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +20,11 @@ public class CustomerConverter {
     private ModelMapper modelMapper;
 
     @Autowired
-    Condition<?, ?> skipNullAndBlank;
+    private SimpleDateFormat formatter;
+
+    @Autowired
+    @Named("update")
+    private ModelMapper modelMapperUpdate;
 
     public Customer customerRequestToCustomer(CustomerRequest request) {
         Customer customer = modelMapper.map(request, Customer.class);
@@ -26,12 +33,17 @@ public class CustomerConverter {
     }
 
     public CustomerSearchResponse customerToCustomerSearchResponse(Customer customer) {
-        return modelMapper.map(customer, CustomerSearchResponse.class);
+        CustomerSearchResponse searchResponse = modelMapper.map(customer, CustomerSearchResponse.class);
+        if (customer.getCreatedDate() != null && customer.getCreatedDate() instanceof Date) {
+            searchResponse.setCreatedDate(formatter.format(customer.getCreatedDate()));
+        }
+        if (customer.getStatus() != null) {
+            searchResponse.setStatus(customer.getStatus().getName());
+        }
+        return searchResponse;
     }
 
     public void editCustomerRequestToCustomer(EditCustomerRequest request, Customer cus) {
-        modelMapper.getConfiguration().setPropertyCondition(skipNullAndBlank);
-        modelMapper.map(request, cus);
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
+        modelMapperUpdate.map(request, cus);
     }
 }
